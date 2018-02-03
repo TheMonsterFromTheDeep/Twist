@@ -1,0 +1,11 @@
+# Ignore Visual Studio stuff
+.vs/
+Debug/
+twist/Debug/
+
+*.sln
+*.vcxproj
+*.vcxproj.*
+
+# Ignore ugly testing file
+src/test.cpp
