@@ -10,13 +10,6 @@
 
 #include "geometry.h"
 
-extern "C" {
-	/* SDL Window type */
-	struct SDL_Window;
-	/* Type pointed to by FT_Face (from FreeType) */
-	struct FT_FaceRec_;
-}
-
 namespace Twist {
 	namespace Util {
 		template<class T>
@@ -42,11 +35,6 @@ namespace Twist {
 		constexpr T Pi(T multiplier=1) {
 			return (T)(multiplier * 3.141592653589793238462643383279502884);
 		}
-	}
-
-	/* Struct names needed inside Twist classes */
-	namespace CLinkage {
-		
 	}
 
 	class Window;
@@ -229,7 +217,7 @@ namespace Twist {
 	};
 
 	class Font {
-		FT_FaceRec_ *ft_face;
+		struct FT_FaceRec_ *ft_face;
 
 	public:
 		Font();
@@ -246,7 +234,7 @@ namespace Twist {
 	};
 
 	class Window : public Widget {
-		SDL_Window *sdl_win;
+		struct SDL_Window *sdl_win;
 		void *gl_context;
 
 	public:
