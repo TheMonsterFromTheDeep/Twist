@@ -6,8 +6,8 @@
 #endif
 
 namespace Twist {
-	namespace debugging {
-		debugstream& debugstream::operator<<(const char *text) {
+	namespace Debugging {
+		DebugStream& DebugStream::operator<<(const char *text) {
 #ifdef WINDOWS
 			OutputDebugStringA(text);
 #else
@@ -16,23 +16,23 @@ namespace Twist {
 			return *this;
 		}
 
-		debugstream& debugstream::operator<<(const std::string& text) {
+		DebugStream& DebugStream::operator<<(const std::string& text) {
 			return operator<<(text.c_str());
 		}
 
-		debugstream& debugstream::operator<<(int i) {
+		DebugStream& DebugStream::operator<<(int i) {
 			return operator<<(std::to_string(i));
 		}
 
-		debugstream& debugstream::operator<<(float f) {
+		DebugStream& DebugStream::operator<<(float f) {
 			return operator<<(std::to_string(f));
 		}
 
-		debugstream& debugstream::operator<<(double d) {
+		DebugStream& DebugStream::operator<<(double d) {
 			return operator<<(std::to_string(d));
 		}
 
-		debugstream& debugstream::operator<<(char c) {
+		DebugStream& DebugStream::operator<<(char c) {
 			char data[2];
 			data[0] = c;
 			data[1] = '\0';
@@ -40,6 +40,6 @@ namespace Twist {
 		}
 	}
 
-	debugging::debugstream debug;
+	Debugging::DebugStream Debug;
 }
 

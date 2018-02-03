@@ -37,14 +37,14 @@ namespace Twist {
 	}
 
 	void Button::onMouseDown(MouseEvent& me) {
-		if (me.button == MouseEvent::LEFT) {
+		if (me.button == MouseEvent::Left) {
 			press = true;
 			captureExternalMouseEvents = true;
 		}
 	}
 
 	void Button::onMouseUp(MouseEvent& me) {
-		if (me.button == MouseEvent::LEFT) {
+		if (me.button == MouseEvent::Left) {
 			press = false;
 			captureExternalMouseEvents = false;
 		}

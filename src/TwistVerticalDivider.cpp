@@ -50,14 +50,14 @@ namespace Twist {
 	}
 
 	void VerticalDivider::onMouseDown(MouseEvent& me) {
-		if (activeDivision != -1 && me.button == MouseEvent::LEFT) {
+		if (activeDivision != -1 && me.button == MouseEvent::Left) {
 			movingDivision = true;
 			me.captured = true;
 		}
 	}
 
 	void VerticalDivider::onMouseUp(MouseEvent& me) {
-		if (me.button == MouseEvent::LEFT) {
+		if (me.button == MouseEvent::Left) {
 			movingDivision = false;
 		}
 	}

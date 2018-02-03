@@ -43,10 +43,10 @@ namespace Twist {
 	class MouseEvent {
 	public:
 		enum Button {
-			NONE,
-			LEFT,
-			MIDDLE,
-			RIGHT
+			None,
+			Left,
+			Middle,
+			Right
 		};
 
 		MouseEvent(float x_, float y_, Button button_);
@@ -281,19 +281,19 @@ namespace Twist {
 
 	void start(Window&);
 
-	namespace debugging {
-		class debugstream {
+	namespace Debugging {
+		class DebugStream {
 		public:
-			debugstream & operator<<(const char*);
-			debugstream& operator<<(const std::string&);
-			debugstream& operator<<(int);
-			debugstream& operator<<(float);
-			debugstream& operator<<(double);
-			debugstream& operator<<(char);
+			DebugStream & operator<<(const char*);
+			DebugStream& operator<<(const std::string&);
+			DebugStream& operator<<(int);
+			DebugStream& operator<<(float);
+			DebugStream& operator<<(double);
+			DebugStream& operator<<(char);
 		};
 	}
 
-	extern debugging::debugstream debug;
+	extern Debugging::DebugStream Debug;
 }
 
 namespace Assets {

@@ -15,13 +15,13 @@ namespace Twist {
 	MouseEvent::Button getButton(int sdl) {
 		switch (sdl) {
 		case SDL_BUTTON_LEFT:
-			return MouseEvent::LEFT;
+			return MouseEvent::Left;
 		case SDL_BUTTON_MIDDLE:
-			return MouseEvent::MIDDLE;
+			return MouseEvent::Middle;
 		case SDL_BUTTON_RIGHT:
-			return MouseEvent::RIGHT;
+			return MouseEvent::Right;
 		}
-		return MouseEvent::NONE;
+		return MouseEvent::None;
 	}
 
 	float invertY(Window& win, int y) {
@@ -47,7 +47,7 @@ namespace Twist {
 				case SDL_QUIT:
 					return;
 				case SDL_MOUSEMOTION: {
-						MouseEvent me((float)evt.motion.x, invertY(win, evt.motion.y), MouseEvent::NONE);
+						MouseEvent me((float)evt.motion.x, invertY(win, evt.motion.y), MouseEvent::None);
 						win.performMouseMove(me);
 					}
 					break;
