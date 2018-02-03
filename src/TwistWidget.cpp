@@ -90,8 +90,6 @@ namespace Twist {
 	void Widget::onMouseLeave() { }
 
 	void Widget::layout(LayoutEngine &e) {
-		Debug << "Widget layout\n";
-
 		if (children.size() < 1) return;
 
 		float xTotal = 0;
