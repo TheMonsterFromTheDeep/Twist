@@ -58,33 +58,34 @@ namespace Twist {
 		MouseEvent childEvent(const Widget&) const;
 	};
 
+	class LayoutEngine;
+
 	class Widget {
 		Vector location;
-		Vector space;
+		Vector bounds;
 
 		bool containsMouse = false;
-		
 
 		friend class Window;
+		friend class LayoutEngine;
 		friend void start(Window&);
 
 		void performMouseDown(MouseEvent&);
 		void performMouseUp(MouseEvent&);
 		void performMouseMove(MouseEvent&);
+		void performLayout();
 	protected:
 		std::vector<std::unique_ptr<Widget>> children;
 
 		bool captureExternalMouseEvents = false;
 	public:
 		Vector getLocation() const;
-		Vector getSpace() const;
 
 		virtual void paint();
-		virtual Vector getBounds() const;
+		Vector getBounds() const;
+		virtual Vector getPreferredBounds();
 
-		virtual void layout();
-		void updateLayout(Vector);
-		void updateLocation(Vector);
+		virtual void layout(LayoutEngine&);
 
 		void addChild(std::unique_ptr<Widget>);
 
@@ -97,6 +98,19 @@ namespace Twist {
 		virtual void onMouseUp(MouseEvent&);
 
 		static void requestLayout();
+		static const float Unbounded;
+	};
+
+	class LayoutEngine {
+		Widget& owner;
+	public:
+		LayoutEngine(Widget& owner_);
+
+		size_t elements();
+		Vector getPreferredBounds(size_t index);
+
+		void setLocation(size_t index, Vector location);
+		void setBounds(size_t index, Vector location);
 	};
 
 	class VerticalDivider : public Widget {
@@ -105,7 +119,7 @@ namespace Twist {
 		bool movingDivision = false;
 	public:
 		virtual void paint();
-		virtual void layout();
+		virtual void layout(LayoutEngine&);
 
 		virtual void onMouseMove(MouseEvent&);
 		virtual void onMouseDown(MouseEvent&);
@@ -117,9 +131,9 @@ namespace Twist {
 		float height;
 	public:
 		virtual void paint();
-		virtual void layout();
+		virtual void layout(LayoutEngine&);
 
-		virtual Vector getBounds();
+		virtual Vector getPreferredBounds();
 	};
 
 	class Button : public Widget {
@@ -130,7 +144,7 @@ namespace Twist {
 		Button(std::string text_);
 
 		void paint();
-		Vector getBounds() const;
+		virtual Vector getPreferredBounds();
 
 		void onMouseEnter();
 		void onMouseLeave();

@@ -1,31 +1,29 @@
 #include "Twist.h"
 
 namespace Twist {
-	void FieldGroup::layout() {
-		float xSpace = getSpace().x / children.size();
-		height = 0;
-		for (auto &&w : children) {
-			w->updateLayout(Vector(xSpace, getSpace().y));
-			w->layout();
-			
-			float newY = w->getBounds().y;
-			if (newY > height) height = newY;
-		}
+	void FieldGroup::layout(LayoutEngine& e) {
+		float width = getBounds().x / children.size();
+		getPreferredBounds();
 
-		height /= (1 - Theme::FieldGroupMargins);
-		Vector space(xSpace, height);
-		Vector position;
+		Vector bounds(width, height);
+		Vector location;
 
-		for (auto &&w : children) {
-			w->updateLayout(space);
-			w->layout();
-			w->updateLocation(position);
-			position.x += w->getBounds().x;
+		for (size_t i = 0; i < e.elements(); ++i) {
+			e.setBounds(i, bounds);
+			e.setLocation(i, location);
+			location.x += bounds.x;
 		}
 	}
 
-	Vector FieldGroup::getBounds() {
-		return Vector(getSpace().x, height);
+	Vector FieldGroup::getPreferredBounds() {
+		height = 0;
+		for (auto &&w : children) {
+			float newY = w->getPreferredBounds().y;
+			if (newY > height && newY != Widget::Unbounded) height = newY;
+		}
+
+		height /= (1 - Theme::FieldGroupMargins);
+		return Vector(Widget::Unbounded, height);
 	}
 
 	void FieldGroup::paint() {

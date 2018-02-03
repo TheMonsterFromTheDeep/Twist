@@ -84,7 +84,7 @@ namespace Twist {
 
 		glMatrixMode(GL_MODELVIEW);
 
-		space = Vector((float)width, (float)height);
+		bounds = Vector((float)width, (float)height);
 
 		captureExternalMouseEvents = true;
 	}

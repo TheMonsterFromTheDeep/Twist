@@ -24,8 +24,8 @@ namespace Twist {
 		Body.render(text.c_str(), textLocation);
 	}
 
-	Vector Button::getBounds() const {
-		return Vector(getSpace().x, Theme::FontSize * 1.5f);
+	Vector Button::getPreferredBounds() {
+		return Vector(Widget::Unbounded, Theme::FontSize * 1.5f);
 	}
 
 	void Button::onMouseEnter() {

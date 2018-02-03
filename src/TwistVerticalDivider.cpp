@@ -1,12 +1,12 @@
 #include "Twist.h"
 
 namespace Twist {
-	void VerticalDivider::layout() {
+	void VerticalDivider::layout(LayoutEngine& e) {
 		if (children.size() < 1) return;
 
 		if (children.size() == 1) {
-			children[0]->updateLocation(Vector());
-			children[0]->updateLayout(getSpace());
+			e.setLocation(0, Vector());
+			e.setBounds(0, getBounds());
 			return;
 		}
 
@@ -17,19 +17,18 @@ namespace Twist {
 			divisions.push_back(0.95f);
 		}
 
-		Vector space = getSpace();
+		Vector bounds = getBounds();
 		Vector position(0, 0);
-		Vector size(space.x, 0);
+		Vector size(bounds.x, 0);
 		size_t index = 0;
-		for (auto &&w : children) {
+		for (size_t i = 0; i < e.elements(); ++i) {
 			if (index < children.size() - 1)
-				size.y = divisions[index] * space.y;
+				size.y = divisions[index] * bounds.y;
 			else
-				size.y = space.y - position.y;
+				size.y = bounds.y - position.y;
 
-			w->updateLayout(size);
-			w->updateLocation(position);
-			w->layout();
+			e.setBounds(i, size);
+			e.setLocation(i, position);
 
 			position.y += size.y;
 			++index;
@@ -39,12 +38,12 @@ namespace Twist {
 	void VerticalDivider::paint() {
 		Widget::paint();
 
-		Vector space = getSpace();
+		Vector bounds = getBounds();
 
 		int division = 0;
 		for (float d : divisions) {
 			GL::color(Color::gray(division == activeDivision ? 0.4f : 0.3f));
-			GL::rectangle(0, d * space.y - 1, space.x, 2);
+			GL::rectangle(0, d * bounds.y - 1, bounds.x, 2);
 			++division;
 		}
 	}
@@ -63,11 +62,11 @@ namespace Twist {
 	}
 
 	void VerticalDivider::onMouseMove(MouseEvent& me) {
-		Vector space = getSpace();
-		if (space.y < 0.001f) return;
+		Vector bounds = getBounds();
+		if (bounds.y < 0.001f) return;
 
 		if (movingDivision) {
-			divisions[activeDivision] = Util::clamp<float>(me.y / space.y, 0, 1);
+			divisions[activeDivision] = Util::clamp<float>(me.y / bounds.y, 0, 1);
 			if (activeDivision > 0) {
 				divisions[activeDivision] = Util::clampLow(divisions[activeDivision], divisions[activeDivision - 1]);
 			}
@@ -83,7 +82,7 @@ namespace Twist {
 		int newDivision = 0;
 
 		for (float d : divisions) {
-			float y = d * space.y;
+			float y = d * bounds.y;
 			if (std::abs(me.y - y) < 3) {
 				activeDivision = newDivision;
 				break;

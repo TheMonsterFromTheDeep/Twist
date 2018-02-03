@@ -25,7 +25,7 @@ namespace Twist {
 	}
 
 	float invertY(Window& win, int y) {
-		return win.getSpace().y - y;
+		return win.getBounds().y - y;
 	}
 
 	static bool needLayoutUpdate = true;
@@ -68,7 +68,7 @@ namespace Twist {
 				glClear(GL_COLOR_BUFFER_BIT);
 
 				if (needLayoutUpdate) {
-					win.layout();
+					win.performLayout();
 					needLayoutUpdate = false;
 				}
 				win.paint();
