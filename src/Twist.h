@@ -49,81 +49,8 @@ namespace Twist {
 		
 	}
 
-	typedef std::function<float()> FloatOp;
-
-	class ThemeFloatOp {
-	public:
-		int sourceId;
-
-		ThemeFloatOp(int sourceId_);
-
-		FloatOp operator+(float);
-		FloatOp operator-(float);
-		FloatOp operator*(float);
-		FloatOp operator/(float);
-	};
-
-	class ValueFloatOp {
-	public:
-		float value;
-
-		ValueFloatOp(float value_);
-
-		FloatOp operator+(float);
-		FloatOp operator-(float);
-		FloatOp operator*(float);
-		FloatOp operator/(float);
-	};
-
-	namespace Theme {
-		void setFloat(int id, FloatOp op);
-
-		float getFloat(int id);
-		void setFloat(int id, float value);
-
-		ThemeFloatOp floatSource(int id);
-		float dpiScaleX();
-		float dpiScaleY();
-	};
-
-	namespace Themes {
-		enum BuiltinProperties {
-			FontSize = 0,
-			BodyFontSize,
-			FieldGroupMargins,
-			SampleResolution,
-
-			FirstUserProperty
-		};
-	}
-	/*class icon {
-	public:
-		virtual void render();
-
-		static icon empty();
-	};
-
-	class text_item {
-	public:
-		icon helper_icon;
-		icon action_icon;
-
-		std::string text;
-
-		text_item(const std::string& text_, icon helper_icon_=icon::empty(), icon action_icon_=icon::empty());
-	};*/
-
-	/*namespace font {
-		void size(int);
-		vector bounds(const char*);
-		void render(const char*,float,float);
-
-		int init();
-	}*/
-
 	class Window;
 	class Widget;
-
 
 	class MouseEvent {
 	public:
@@ -329,6 +256,41 @@ namespace Twist {
 		friend void start(Window&);
 	};
 
+	float getDpiScaleX();
+	float getDpiScaleY();
+
+	template<class T>
+	class DpiX {
+		T value;
+	public:
+		DpiX() : value(0) { }
+		DpiX(T value_) : value(value_) { }
+
+		void operator= (T newValue) {
+			value = newValue;
+		}
+		
+		operator T() {
+			return value * getDpiScaleX();
+		}
+	};
+
+	template<class T>
+	class DpiY {
+		T value;
+	public:
+		DpiY() : value(0) { }
+		DpiY(T value_) : value(value_) { }
+
+		void operator= (T newValue) {
+			value = newValue;
+		}
+
+		operator T() {
+			return value * getDpiScaleY();
+		}
+	};
+
 	void start(Window&);
 
 	namespace debugging {
@@ -352,13 +314,11 @@ namespace Assets {
 	}
 }
 
-#define TwistThemeProperties(first, ...)\
-namespace Twist { namespace Themes {    \
-	enum UserThemes {                   \
-		first = FirstUserProperty,      \
-		__VA_ARGS__                     \
-	};                                  \
-} }
+namespace Theme {
+	extern Twist::DpiY<float> FontSize;
+	extern float FieldGroupMargins;
+	extern float CurveResolution;
+}
 
 #ifndef main
 	#define main Twist_main_

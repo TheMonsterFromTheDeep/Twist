@@ -13,14 +13,12 @@
 namespace Twist {
 	static float dpiScaleXFac, dpiScaleYFac;
 
-	namespace Theme {
-		float dpiScaleX() {
-			return dpiScaleXFac;
-		}
+	float getDpiScaleX() {
+		return dpiScaleXFac;
+	}
 
-		float dpiScaleY() {
-			return dpiScaleYFac;
-		}
+	float getDpiScaleY() {
+		return dpiScaleYFac;
 	}
 
 	void setDPIAware() {
@@ -62,8 +60,6 @@ namespace Twist {
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			width, height,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-
-		
 
 		if (!sdl_win) {
 			throw std::runtime_error(SDL_GetError());

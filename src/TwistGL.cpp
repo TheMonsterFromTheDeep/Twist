@@ -154,7 +154,7 @@ namespace Twist {
 				vert(x + width, bottomInset);
 			end();
 
-			int steps = (int)std::ceil(Util::Pi<float>(2) * radius * 0.25f * Theme::getFloat(Themes::SampleResolution));
+			int steps = (int)std::ceil(Util::Pi<float>(2) * radius * 0.25f * Theme::CurveResolution);
 			float circle = (Util::Pi<float>(2)) / (steps * 4);
 
 			beginTriangleFan();

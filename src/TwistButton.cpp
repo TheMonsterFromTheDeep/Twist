@@ -18,15 +18,14 @@ namespace Twist {
 			GL::rectangleV(0, 0, bounds.x, bounds.y, Color::gray(0.8f), Color::gray(0.7f));		
 
 		GL::color(Color::gray(0.1f));
-		Body.setSize((int)Theme::getFloat(Themes::BodyFontSize));
+		Body.setSize((int)Theme::FontSize);
 		Vector fontBounds = Body.bounds(text.c_str());
 		Vector textLocation = Vector(radius, ((bounds - fontBounds) * 0.5f).y);
 		Body.render(text.c_str(), textLocation);
 	}
 
 	Vector Button::getBounds() const {
-		float bodyFontSize = Theme::getFloat(Themes::BodyFontSize);
-		return Vector(getSpace().x, bodyFontSize * 1.5f);
+		return Vector(getSpace().x, Theme::FontSize * 1.5f);
 	}
 
 	void Button::onMouseEnter() {

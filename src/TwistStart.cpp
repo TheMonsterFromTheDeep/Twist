@@ -2,13 +2,11 @@
 #include <SDL_opengl.h>
 #include "Twist.h"
 
-Twist::Font Assets::Fonts::Body;
-
-void registerBuiltinAssets() {
+static void registerBuiltinAssets() {
 	static bool registered = false;
 	if (registered) return;
 
-	Assets::Fonts::Body.load("Yantramanav-Light.ttf");
+	Assets::Fonts::Body.load("font/Yantramanav-Light.ttf");
 
 	registered = true;
 }

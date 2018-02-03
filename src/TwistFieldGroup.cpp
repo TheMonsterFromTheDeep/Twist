@@ -12,7 +12,7 @@ namespace Twist {
 			if (newY > height) height = newY;
 		}
 
-		height /= (1 - Theme::getFloat(Themes::FieldGroupMargins));
+		height /= (1 - Theme::FieldGroupMargins);
 		Vector space(xSpace, height);
 		Vector position;
 
@@ -31,7 +31,7 @@ namespace Twist {
 	void FieldGroup::paint() {
 		Vector bounds = getBounds();
 
-		float inset = height * Theme::getFloat(Themes::FieldGroupMargins);
+		float inset = height * Theme::FieldGroupMargins;
 		float radius = height / 4;
 
 		GL::color(Color::gray(0.3f));
