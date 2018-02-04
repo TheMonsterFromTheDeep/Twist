@@ -91,4 +91,54 @@ namespace Twist {
 			++newDivision;
 		}
 	}
+
+	void VerticalDivider::addChild() {
+		auto dc = std::make_unique<DividerChild>();
+		dc->parentType = DividerChild::Vertical;
+		Widget::addChild(std::move(dc));
+	}
+
+	void VerticalDivider::split(Widget& child, bool isTop) {
+		size_t index = 0;
+
+		for (auto &&w : children) {
+			if (w.get() == &child) {
+				break;
+			}
+
+			++index;
+		}
+
+		if (index == children.size()) return;
+
+		auto dc = std::make_unique<DividerChild>();
+		dc->parentType = DividerChild::Vertical;
+
+		if (isTop) {
+			insertChild(std::move(dc), index + 1);
+			float newDivision;
+			if (index == children.size() - 1) {
+				newDivision = 1;
+			}
+			else {
+				newDivision = divisions[index + 1];
+			}
+			divisions.insert(divisions.begin() + index, newDivision);
+			activeDivision = index;
+			movingDivision = true;
+		}
+		else {
+			insertChild(std::move(dc), index);
+			float newDivision;
+			if (index == 0) {
+				newDivision = 0;
+			}
+			else {
+				newDivision = divisions[index];
+			}
+			divisions.insert(divisions.begin() + index, newDivision);
+			activeDivision = index;
+			movingDivision = true;
+		}
+	}
 }

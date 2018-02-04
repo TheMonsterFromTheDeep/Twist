@@ -60,6 +60,14 @@ namespace Twist {
 
 	class LayoutEngine;
 
+	class WidgetTemp {
+	public:
+		std::unique_ptr<Widget> widget;
+		int insertionIndex;
+
+		WidgetTemp(std::unique_ptr<Widget> widget_, int insertionIndex_ = -1);
+	};
+
 	class Widget {
 		Vector location;
 		Vector bounds;
@@ -74,9 +82,13 @@ namespace Twist {
 		void performMouseUp(MouseEvent&);
 		void performMouseMove(MouseEvent&);
 		void performLayout();
+
+		std::vector<WidgetTemp> insertionBuffer;
+
+		Widget* parent = nullptr;
 	protected:
 		std::vector<std::unique_ptr<Widget>> children;
-
+		
 		bool captureExternalMouseEvents = false;
 	public:
 		Vector getLocation() const;
@@ -88,6 +100,7 @@ namespace Twist {
 		virtual void layout(LayoutEngine&);
 
 		void addChild(std::unique_ptr<Widget>);
+		void insertChild(std::unique_ptr<Widget>, size_t index);
 
 		bool isLocal(Vector point);
 
@@ -99,6 +112,9 @@ namespace Twist {
 
 		static void requestLayout();
 		static const float Unbounded;
+
+		bool hasParent();
+		Widget& getParent();
 	};
 
 	class LayoutEngine {
@@ -124,11 +140,36 @@ namespace Twist {
 		virtual void onMouseMove(MouseEvent&);
 		virtual void onMouseDown(MouseEvent&);
 		virtual void onMouseUp(MouseEvent&);
+
+		void addChild();
+
+		void split(Widget& child, bool isTop);
 	};
 
 	class DividerChild : public Widget {
+		enum Corner {
+			None = -1,
+			BottomLeft = 0,
+			TopRight = 1
+		};
+
+		Corner activeCorner;
+
+		bool active;
+		Vector actionCenter;
 	public:
+		enum ParentType {
+			Vertical,
+			Horizontal,
+			Neither
+		};
+
+		ParentType parentType;
+
 		virtual void paint();
+
+		virtual void onMouseMove(MouseEvent&);
+		virtual void onMouseDown(MouseEvent&);
 	};
 
 	class FieldGroup : public Widget {
@@ -336,6 +377,10 @@ namespace Twist {
 
 		T y() {
 			return value * getDpiScaleY();
+		}
+
+		T area() {
+			return x() * y();
 		}
 	};
 

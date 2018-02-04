@@ -1,6 +1,8 @@
 #include "Twist.h"
 
 namespace Twist {
+	WidgetTemp::WidgetTemp(std::unique_ptr<Widget> widget_, int insertionIndex_) : widget(std::move(widget_)), insertionIndex(insertionIndex_) { }
+
 	const float Widget::Unbounded = -1;
 
 	void Widget::paint() {
@@ -12,6 +14,17 @@ namespace Twist {
 	}
 
 	void Widget::performLayout() {
+		for (auto &iw : insertionBuffer) {
+			iw.widget->parent = this;
+			if (iw.insertionIndex < 0) {
+				children.push_back(std::move(iw.widget));
+			}
+			else {
+				children.insert(children.begin() + iw.insertionIndex, std::move(iw.widget));
+			}
+		}
+		insertionBuffer.clear();
+
 		LayoutEngine engine(*this);
 		layout(engine);
 
@@ -112,7 +125,25 @@ namespace Twist {
 	}
 
 	void Widget::addChild(std::unique_ptr<Widget> child) {
-		children.push_back(std::move(child));
+		insertionBuffer.push_back(WidgetTemp(std::move(child)));
+		requestLayout();
+	}
+
+	void Widget::insertChild(std::unique_ptr<Widget> child, size_t index) {
+		insertionBuffer.push_back(WidgetTemp(std::move(child), index));
+		requestLayout();
+	}
+
+	bool Widget::hasParent() {
+		return parent != nullptr;
+	}
+
+	Widget& Widget::getParent() {
+		if (!hasParent()) {
+			throw std::runtime_error("Twist: Trying to access nonexistent parent!");
+		}
+
+		return *parent;
 	}
 
 	LayoutEngine::LayoutEngine(Widget& owner_) : owner(owner_) { }
