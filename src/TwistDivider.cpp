@@ -1,7 +1,7 @@
 #include "Twist.h"
 
 namespace Twist {
-	void VerticalDivider::layout(LayoutEngine& e) {
+	void Divider::layout(LayoutEngine& e) {
 		if (children.size() < 1) return;
 
 		if (children.size() == 1) {
@@ -17,35 +17,65 @@ namespace Twist {
 			divisions.push_back(0.95f);
 		}
 
-		Vector bounds = getBounds();
-		Vector location(0, 0);
-		Vector size(bounds.x, 0);
+		if (isHorizontal) {
+			Vector bounds = getBounds();
+			Vector location(0, 0);
+			Vector size(0, bounds.y);
 
-		for (size_t i = 0; i < e.elements(); ++i) {
-			if (i < children.size() - 1)
-				size.y = divisions[i] * bounds.y - location.y;
-			else
-				size.y = bounds.y - location.y;
+			for (size_t i = 0; i < e.elements(); ++i) {
+				if (i < children.size() - 1)
+					size.x = divisions[i] * bounds.x - location.x;
+				else
+					size.x = bounds.x - location.x;
 
-			size.y -= Theme::DividerWidth.y() * 0.5f;
+				size.x -= Theme::DividerWidth.x() * 0.5f;
 
-			e.setBounds(i, size);
-			e.setLocation(i, location);
+				e.setBounds(i, size);
+				e.setLocation(i, location);
 
-			location.y += size.y + Theme::DividerWidth.y();
+				location.x += size.x + Theme::DividerWidth.x();
+			}
+		}
+		else {
+			Vector bounds = getBounds();
+			Vector location(0, 0);
+			Vector size(bounds.x, 0);
+
+			for (size_t i = 0; i < e.elements(); ++i) {
+				if (i < children.size() - 1)
+					size.y = divisions[i] * bounds.y - location.y;
+				else
+					size.y = bounds.y - location.y;
+
+				size.y -= Theme::DividerWidth.y() * 0.5f;
+
+				e.setBounds(i, size);
+				e.setLocation(i, location);
+
+				location.y += size.y + Theme::DividerWidth.y();
+			}
 		}
 	}
 
-	void VerticalDivider::paint() {
+	void Divider::paint() {
 		Widget::paint();
 
 		Vector bounds = getBounds();
 
 		int division = 0;
-		for (float d : divisions) {
-			GL::color(division == activeDivision ? Theme::DividerActiveColor : Theme::DividerColor);
-			GL::rectangle(0, d * bounds.y - Theme::DividerWidth.y() * 0.5f, bounds.x, Theme::DividerWidth.y());
-			++division;
+		if (isHorizontal) {
+			for (float d : divisions) {
+				GL::color(division == activeDivision ? Theme::DividerActiveColor : Theme::DividerColor);
+				GL::rectangle(d * bounds.x - Theme::DividerWidth.x() * 0.5f, 0, Theme::DividerWidth.x(), bounds.y);
+				++division;
+			}
+		}
+		else {
+			for (float d : divisions) {
+				GL::color(division == activeDivision ? Theme::DividerActiveColor : Theme::DividerColor);
+				GL::rectangle(0, d * bounds.y - Theme::DividerWidth.y() * 0.5f, bounds.x, Theme::DividerWidth.y());
+				++division;
+			}
 		}
 
 		if (shouldMerge) {
@@ -56,14 +86,14 @@ namespace Twist {
 		}
 	}
 
-	void VerticalDivider::onMouseDown(MouseEvent& me) {
+	void Divider::onMouseDown(MouseEvent& me) {
 		if (activeDivision != -1 && me.button == MouseEvent::Left) {
 			movingDivision = true;
 			me.captured = true;
 		}
 	}
 
-	void VerticalDivider::onMouseUp(MouseEvent& me) {
+	void Divider::onMouseUp(MouseEvent& me) {
 		if (me.button == MouseEvent::Left) {
 			movingDivision = false;
 		}
@@ -75,16 +105,20 @@ namespace Twist {
 		shouldMerge = false;
 	}
 
-	void VerticalDivider::onMouseMove(MouseEvent& me) {
+	void Divider::onMouseMove(MouseEvent& me) {
 		Vector bounds = getBounds();
-		if (bounds.y < 0.001f) return;
+		if (bounds.x < 0.001f || bounds.y < 0.001f) return;
 
 		if (mergeChild > -1) {
 			shouldMerge = children[mergeChild]->isLocal(Vector(me.x, me.y));
 		}
 
 		if (movingDivision) {
-			divisions[activeDivision] = Util::clamp<float>(me.y / bounds.y, 0, 1);
+			if(isHorizontal)
+				divisions[activeDivision] = Util::clamp<float>(me.x / bounds.x, 0, 1);
+			else
+				divisions[activeDivision] = Util::clamp<float>(me.y / bounds.y, 0, 1);
+
 			if (activeDivision > 0) {
 				divisions[activeDivision] = Util::clampLow(divisions[activeDivision], divisions[activeDivision - 1]);
 			}
@@ -99,23 +133,35 @@ namespace Twist {
 		activeDivision = -1;
 		int newDivision = 0;
 
-		for (float d : divisions) {
-			float y = d * bounds.y;
-			if (std::abs(me.y - y) < Theme::DividerWidth.y() * Theme::DividerActivationMargin) {
-				activeDivision = newDivision;
-				break;
+		if (isHorizontal) {
+			for (float d : divisions) {
+				float x = d * bounds.x;
+				if (std::abs(me.x - x) < Theme::DividerWidth.x() * Theme::DividerActivationMargin) {
+					activeDivision = newDivision;
+					break;
+				}
+				++newDivision;
 			}
-			++newDivision;
+		}
+		else {
+			for (float d : divisions) {
+				float y = d * bounds.y;
+				if (std::abs(me.y - y) < Theme::DividerWidth.y() * Theme::DividerActivationMargin) {
+					activeDivision = newDivision;
+					break;
+				}
+				++newDivision;
+			}
 		}
 	}
 
-	void VerticalDivider::addChild() {
+	void Divider::addChild() {
 		auto dc = std::make_unique<DividerChild>();
 		dc->parentType = DividerChild::Vertical;
 		Widget::addChild(std::move(dc));
 	}
 
-	void VerticalDivider::initMerge(Widget& child, bool isTop) {
+	void Divider::initMerge(Widget& child, bool isTop) {
 		size_t index = 0;
 
 		for (auto &&w : children) {
@@ -134,7 +180,7 @@ namespace Twist {
 		shouldMerge = true;
 	}
 
-	void VerticalDivider::split(Widget& child, bool isTop) {
+	void Divider::splitVertical(Widget& child, bool isTop) {
 		size_t index = 0;
 
 		for (auto &&w : children) {

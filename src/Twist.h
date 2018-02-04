@@ -131,7 +131,7 @@ namespace Twist {
 		void setBounds(size_t index, Vector location);
 	};
 
-	class VerticalDivider : public Widget {
+	class Divider : public Widget {
 		std::vector<float> divisions;
 		int activeDivision;
 		bool movingDivision = false;
@@ -139,6 +139,8 @@ namespace Twist {
 		int mergeChild = -1;
 		int mergeDivision;
 		bool shouldMerge = false;
+
+		bool isHorizontal = false;
 	public:
 		virtual void paint();
 		virtual void layout(LayoutEngine&);
@@ -149,7 +151,7 @@ namespace Twist {
 
 		void addChild();
 
-		void split(Widget& child, bool isTop);
+		void splitVertical(Widget& child, bool isTop);
 		void initMerge(Widget& child, bool isTop);
 	};
 

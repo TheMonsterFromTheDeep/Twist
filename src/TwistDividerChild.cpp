@@ -36,7 +36,7 @@ namespace Twist {
 			}
 
 			if (parentType == Vertical) {
-				VerticalDivider& parent = static_cast<VerticalDivider&>(getParent());
+				Divider& parent = static_cast<Divider&>(getParent());
 				if (activeCorner == BottomLeft) {
 					switch(quadrant) {
 					case 1:
@@ -44,14 +44,14 @@ namespace Twist {
 						parent.initMerge(*this, false);
 						break;
 					case 3:
-						parent.split(*this, false);
+						parent.splitVertical(*this, false);
 						break;
 					}
 				}
 				else {
 					switch(quadrant) {
 					case 1:
-						parent.split(*this, true);
+						parent.splitVertical(*this, true);
 						break;
 					case 3:
 						parent.initMerge(*this, true);
