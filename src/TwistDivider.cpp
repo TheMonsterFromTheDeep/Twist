@@ -157,70 +157,142 @@ namespace Twist {
 
 	void Divider::addChild() {
 		auto dc = std::make_unique<DividerChild>();
-		dc->parentType = DividerChild::Vertical;
 		Widget::addChild(std::move(dc));
 	}
 
-	void Divider::initMerge(Widget& child, bool isTop) {
-		size_t index = 0;
+	void Divider::initVerticalMerge(Widget& child, bool isTop) {
+		if (!isHorizontal) {
+			size_t index = 0;
 
-		for (auto &&w : children) {
-			if (w.get() == &child) {
-				break;
+			for (auto &&w : children) {
+				if (w.get() == &child) {
+					break;
+				}
+
+				++index;
 			}
 
-			++index;
+			if (index == 0 && !isTop) return;
+			if (index == children.size() - 1 && isTop) return;
+
+			mergeChild = isTop ? index + 1 : index - 1;
+			mergeDivision = isTop ? index : index - 1;
+			shouldMerge = true;
 		}
+	}
 
-		if (index == 0 && !isTop) return;
-		if (index == children.size() - 1 && isTop) return;
+	void Divider::initHorizontalMerge(Widget& child, bool isRight) {
+		if (isHorizontal) {
+			size_t index = 0;
 
-		mergeChild = isTop ? index + 1 : index - 1;
-		mergeDivision = isTop ? index : index - 1;
-		shouldMerge = true;
+			for (auto &&w : children) {
+				if (w.get() == &child) {
+					break;
+				}
+
+				++index;
+			}
+
+			if (index == 0 && !isRight) return;
+			if (index == children.size() - 1 && isRight) return;
+
+			mergeChild = isRight ? index + 1 : index - 1;
+			mergeDivision = isRight ? index : index - 1;
+			shouldMerge = true;
+		}
+	}
+
+	void Divider::splitHorizontal(Widget& child, bool isRight) {
+		if (isHorizontal || children.size() < 2) {
+			isHorizontal = true;
+
+			size_t index = 0;
+
+			for (auto &&w : children) {
+				if (w.get() == &child) {
+					break;
+				}
+
+				++index;
+			}
+
+			if (index == children.size()) return;
+
+			auto dc = std::make_unique<DividerChild>();
+
+			if (isRight) {
+				insertChild(std::move(dc), index + 1);
+				float newDivision;
+				if (index == children.size() - 1) {
+					newDivision = 1;
+				}
+				else {
+					newDivision = divisions[index + 1];
+				}
+				divisions.insert(divisions.begin() + index, newDivision);
+				activeDivision = index;
+				movingDivision = true;
+			}
+			else {
+				insertChild(std::move(dc), index);
+				float newDivision;
+				if (index == 0) {
+					newDivision = 0;
+				}
+				else {
+					newDivision = divisions[index];
+				}
+				divisions.insert(divisions.begin() + index, newDivision);
+				activeDivision = index;
+				movingDivision = true;
+			}
+		}
 	}
 
 	void Divider::splitVertical(Widget& child, bool isTop) {
-		size_t index = 0;
+		if (!isHorizontal || children.size() < 2) {
+			isHorizontal = false;
 
-		for (auto &&w : children) {
-			if (w.get() == &child) {
-				break;
+			size_t index = 0;
+
+			for (auto &&w : children) {
+				if (w.get() == &child) {
+					break;
+				}
+
+				++index;
 			}
 
-			++index;
-		}
+			if (index == children.size()) return;
 
-		if (index == children.size()) return;
+			auto dc = std::make_unique<DividerChild>();
 
-		auto dc = std::make_unique<DividerChild>();
-		dc->parentType = DividerChild::Vertical;
-
-		if (isTop) {
-			insertChild(std::move(dc), index + 1);
-			float newDivision;
-			if (index == children.size() - 1) {
-				newDivision = 1;
-			}
-			else {
-				newDivision = divisions[index + 1];
-			}
-			divisions.insert(divisions.begin() + index, newDivision);
-			activeDivision = index;
-			movingDivision = true;
-		}
-		else {
-			insertChild(std::move(dc), index);
-			float newDivision;
-			if (index == 0) {
-				newDivision = 0;
+			if (isTop) {
+				insertChild(std::move(dc), index + 1);
+				float newDivision;
+				if (index == children.size() - 1) {
+					newDivision = 1;
+				}
+				else {
+					newDivision = divisions[index + 1];
+				}
+				divisions.insert(divisions.begin() + index, newDivision);
+				activeDivision = index;
+				movingDivision = true;
 			}
 			else {
-				newDivision = divisions[index];
+				insertChild(std::move(dc), index);
+				float newDivision;
+				if (index == 0) {
+					newDivision = 0;
+				}
+				else {
+					newDivision = divisions[index];
+				}
+				divisions.insert(divisions.begin() + index, newDivision);
+				activeDivision = index;
+				movingDivision = true;
 			}
-			divisions.insert(divisions.begin() + index, newDivision);
-			activeDivision = index;
-			movingDivision = true;
 		}
 	}
 }

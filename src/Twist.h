@@ -152,7 +152,9 @@ namespace Twist {
 		void addChild();
 
 		void splitVertical(Widget& child, bool isTop);
-		void initMerge(Widget& child, bool isTop);
+		void splitHorizontal(Widget& child, bool isRight);
+		void initVerticalMerge(Widget& child, bool isTop);
+		void initHorizontalMerge(Widget& child, bool isRight);
 	};
 
 	class DividerChild : public Widget {
@@ -167,14 +169,6 @@ namespace Twist {
 		bool active;
 		Vector actionCenter;
 	public:
-		enum ParentType {
-			Vertical,
-			Horizontal,
-			Neither
-		};
-
-		ParentType parentType;
-
 		virtual void paint();
 
 		virtual void onMouseMove(MouseEvent&);

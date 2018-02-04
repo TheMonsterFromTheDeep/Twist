@@ -19,7 +19,6 @@ namespace Twist {
 	void DividerChild::onMouseMove(MouseEvent& me) {
 		if (active) {
 			if (!hasParent()) return;
-			if (parentType == Neither) return;
 
 			Vector diff = Vector(me.x, me.y) - actionCenter;
 			if (diff.lensqr() < Theme::DividerSplitterWidth.area()) {
@@ -35,31 +34,40 @@ namespace Twist {
 				quadrant = diff.y > 0 ? 3 : 1;
 			}
 
-			if (parentType == Vertical) {
-				Divider& parent = static_cast<Divider&>(getParent());
-				if (activeCorner == BottomLeft) {
-					switch(quadrant) {
-					case 1:
-						Debug << "init merge...\n";
-						parent.initMerge(*this, false);
-						break;
-					case 3:
-						parent.splitVertical(*this, false);
-						break;
-					}
+			Divider& parent = static_cast<Divider&>(getParent());
+			if (activeCorner == BottomLeft) {
+				switch(quadrant) {
+				case 0:
+					parent.initHorizontalMerge(*this, false);
+					break;
+				case 1:
+					parent.initVerticalMerge(*this, false);
+					break;
+				case 2:
+					parent.splitHorizontal(*this, false);
+					break;
+				case 3:
+					parent.splitVertical(*this, false);
+					break;
 				}
-				else {
-					switch(quadrant) {
-					case 1:
-						parent.splitVertical(*this, true);
-						break;
-					case 3:
-						parent.initMerge(*this, true);
-						break;
-					}
-				}
-
 			}
+			else {
+				switch(quadrant) {
+				case 0:
+					parent.splitHorizontal(*this, true);
+					break;
+				case 1:
+					parent.splitVertical(*this, true);
+					break;
+				case 2:
+					parent.initHorizontalMerge(*this, true);
+					break;
+				case 3:
+					parent.initVerticalMerge(*this, true);
+					break;
+				}
+			}
+
 			active = false;
 			me.captured = true;
 
