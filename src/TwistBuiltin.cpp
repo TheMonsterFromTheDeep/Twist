@@ -19,11 +19,18 @@ namespace Theme {
 	Twist::DpiXY<float> DividerWidth(2.f);
 	float DividerActivationMargin(2.5f);
 
+	Twist::DpiXY<float> DividerSplitterWidth(10.f);
+
 	float CurveResolution(1.f);
 }
 
 namespace Assets {
 	namespace Fonts {
 		Twist::Font Body;
+	}
+
+	namespace Images {
+		Twist::Image DividerTopRight;
+		Twist::Image DividerBottomLeft;
 	}
 }

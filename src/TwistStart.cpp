@@ -8,6 +8,9 @@ static void registerBuiltinAssets() {
 
 	Assets::Fonts::Body.load("font/Yantramanav-Light.ttf");
 
+	Assets::Images::DividerBottomLeft.load("img/DividerBottomLeft.png");
+	Assets::Images::DividerTopRight.load("img/DividerTopRight.png");
+
 	registered = true;
 }
 

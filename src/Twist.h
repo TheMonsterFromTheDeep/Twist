@@ -126,6 +126,11 @@ namespace Twist {
 		virtual void onMouseUp(MouseEvent&);
 	};
 
+	class DividerChild : public Widget {
+	public:
+		virtual void paint();
+	};
+
 	class FieldGroup : public Widget {
 	private:
 		float height;
@@ -229,6 +234,26 @@ namespace Twist {
 		void rectangle(float x, float y, float width, float height);
 		void rectangleV(float x, float y, float width, float height, Color top, Color bottom);
 		void roundRectangle(float x, float y, float width, float height, float radius);
+	};
+
+	class Image {
+		unsigned int glId;
+
+		float width_, height_;
+	public:
+		Image();
+
+		float width();
+		float height();
+
+		void load(const char* path);
+		void draw(float x, float y);
+		void draw(float x, float y, float width, float height);
+
+		void bind();
+		void drawBound(float x, float y);
+		void drawBound(float x, float y, float width, float height);
+		void unbind();
 	};
 
 	class Font {
@@ -335,6 +360,11 @@ namespace Assets {
 	namespace Fonts {
 		extern Twist::Font Body;
 	}
+
+	namespace Images {
+		extern Twist::Image DividerTopRight;
+		extern Twist::Image DividerBottomLeft;
+	}
 }
 
 namespace Theme {
@@ -355,6 +385,8 @@ namespace Theme {
 	extern Twist::Color DividerActiveColor;
 	extern Twist::DpiXY<float> DividerWidth;
 	extern float DividerActivationMargin;
+
+	extern Twist::DpiXY<float> DividerSplitterWidth;
 
 	extern float CurveResolution;
 }
