@@ -11,13 +11,13 @@ namespace Twist {
 		float radius = bounds.y / 4;
 		
 		if (press && highlight)
-			GL::rectangleV(0, 0, bounds.x, bounds.y, Color::gray(0.6f), Color::gray(0.7f));
+			GL::rectangleV(0, 0, bounds.x, bounds.y, Theme::ButtonPressedTop, Theme::ButtonPressedBottom);
 		else if (highlight)
-			GL::rectangleV(0, 0, bounds.x, bounds.y, Color::gray(0.9f), Color::gray(0.7f));
+			GL::rectangleV(0, 0, bounds.x, bounds.y, Theme::ButtonHighlightedTop, Theme::ButtonHighlightedBottom);
 		else
-			GL::rectangleV(0, 0, bounds.x, bounds.y, Color::gray(0.8f), Color::gray(0.7f));		
+			GL::rectangleV(0, 0, bounds.x, bounds.y, Theme::ButtonUnpressedTop, Theme::ButtonUnpressedBottom);		
 
-		GL::color(Color::gray(0.1f));
+		GL::color(Theme::ButtonFontColor);
 		Body.setSize((int)Theme::FontSize);
 		Vector fontBounds = Body.bounds(text.c_str());
 		Vector textLocation = Vector(radius, ((bounds - fontBounds) * 0.5f).y);

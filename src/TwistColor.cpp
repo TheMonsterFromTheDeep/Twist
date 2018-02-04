@@ -3,6 +3,7 @@
 namespace Twist {
 	Color::Color() : Color(0, 0, 0, 1) { }
 	Color::Color(float r_, float g_, float b_, float a_) : r(r_), g(g_), b(b_), a(a_) { }
+	Color::Color(const Color& other) : r(other.r), g(other.g), b(other.b), a(other.a) { }
 
 	/* HSV -> RGB conversion taken from
 	* https://www.cs.rit.edu/~ncs/color/t_convert.html

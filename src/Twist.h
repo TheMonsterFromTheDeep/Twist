@@ -157,6 +157,7 @@ namespace Twist {
 		float r, g, b, a;
 		Color();
 		Color(float r_, float g_, float b_, float a_=1);
+		Color(const Color& other);
 
 		static Color fromHSV(float h, float s, float v, float a = 1);
 		static Color rgbFromHex(unsigned int hex);
@@ -293,6 +294,26 @@ namespace Twist {
 		}
 	};
 
+	template<class T>
+	class DpiXY {
+		T value;
+	public:
+		DpiXY() : value(0) { }
+		DpiXY(T value_) : value(value_) { }
+
+		void operator=(T newValue) {
+			value = newValue;
+		}
+
+		T x() {
+			return value * getDpiScaleX();
+		}
+
+		T y() {
+			return value * getDpiScaleY();
+		}
+	};
+
 	void start(Window&);
 
 	namespace Debugging {
@@ -318,7 +339,23 @@ namespace Assets {
 
 namespace Theme {
 	extern Twist::DpiY<float> FontSize;
+
+	extern Twist::Color FieldGroupBorder;
 	extern float FieldGroupMargins;
+
+	extern Twist::Color ButtonUnpressedTop;
+	extern Twist::Color ButtonUnpressedBottom;
+	extern Twist::Color ButtonHighlightedTop;
+	extern Twist::Color ButtonHighlightedBottom;
+	extern Twist::Color ButtonPressedTop;
+	extern Twist::Color ButtonPressedBottom;
+	extern Twist::Color ButtonFontColor;
+
+	extern Twist::Color DividerColor;
+	extern Twist::Color DividerActiveColor;
+	extern Twist::DpiXY<float> DividerWidth;
+	extern float DividerActivationMargin;
+
 	extern float CurveResolution;
 }
 

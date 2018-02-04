@@ -27,10 +27,12 @@ namespace Twist {
 			else
 				size.y = bounds.y - position.y;
 
+			size.y -= Theme::DividerWidth.y() * 0.5f;
+
 			e.setBounds(i, size);
 			e.setLocation(i, position);
 
-			position.y += size.y;
+			position.y += size.y + Theme::DividerWidth.y();
 			++index;
 		}
 	}
@@ -42,8 +44,8 @@ namespace Twist {
 
 		int division = 0;
 		for (float d : divisions) {
-			GL::color(Color::gray(division == activeDivision ? 0.4f : 0.3f));
-			GL::rectangle(0, d * bounds.y - 1, bounds.x, 2);
+			GL::color(division == activeDivision ? Theme::DividerActiveColor : Theme::DividerColor);
+			GL::rectangle(0, d * bounds.y - Theme::DividerWidth.y() * 0.5f, bounds.x, Theme::DividerWidth.y());
 			++division;
 		}
 	}
@@ -83,7 +85,7 @@ namespace Twist {
 
 		for (float d : divisions) {
 			float y = d * bounds.y;
-			if (std::abs(me.y - y) < 3) {
+			if (std::abs(me.y - y) < Theme::DividerWidth.y() * Theme::DividerActivationMargin) {
 				activeDivision = newDivision;
 				break;
 			}
