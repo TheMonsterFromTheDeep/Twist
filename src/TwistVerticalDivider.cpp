@@ -18,22 +18,21 @@ namespace Twist {
 		}
 
 		Vector bounds = getBounds();
-		Vector position(0, 0);
+		Vector location(0, 0);
 		Vector size(bounds.x, 0);
-		size_t index = 0;
+
 		for (size_t i = 0; i < e.elements(); ++i) {
-			if (index < children.size() - 1)
-				size.y = divisions[index] * bounds.y;
+			if (i < children.size() - 1)
+				size.y = divisions[i] * bounds.y - location.y;
 			else
-				size.y = bounds.y - position.y;
+				size.y = bounds.y - location.y;
 
 			size.y -= Theme::DividerWidth.y() * 0.5f;
 
 			e.setBounds(i, size);
-			e.setLocation(i, position);
+			e.setLocation(i, location);
 
-			position.y += size.y + Theme::DividerWidth.y();
-			++index;
+			location.y += size.y + Theme::DividerWidth.y();
 		}
 	}
 
