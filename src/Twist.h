@@ -84,6 +84,7 @@ namespace Twist {
 		void performLayout();
 
 		std::vector<WidgetTemp> insertionBuffer;
+		std::vector<size_t> deletionBuffer;
 
 		Widget* parent = nullptr;
 	protected:
@@ -101,6 +102,7 @@ namespace Twist {
 
 		void addChild(std::unique_ptr<Widget>);
 		void insertChild(std::unique_ptr<Widget>, size_t index);
+		void removeChild(size_t index);
 
 		bool isLocal(Vector point);
 
@@ -133,6 +135,10 @@ namespace Twist {
 		std::vector<float> divisions;
 		int activeDivision;
 		bool movingDivision = false;
+
+		int mergeChild = -1;
+		int mergeDivision;
+		bool shouldMerge = false;
 	public:
 		virtual void paint();
 		virtual void layout(LayoutEngine&);
@@ -144,6 +150,7 @@ namespace Twist {
 		void addChild();
 
 		void split(Widget& child, bool isTop);
+		void initMerge(Widget& child, bool isTop);
 	};
 
 	class DividerChild : public Widget {

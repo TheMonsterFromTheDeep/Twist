@@ -14,6 +14,11 @@ namespace Twist {
 	}
 
 	void Widget::performLayout() {
+		for (auto i : deletionBuffer) {
+			children.erase(children.begin() + i);
+		}
+		deletionBuffer.clear();
+
 		for (auto &iw : insertionBuffer) {
 			iw.widget->parent = this;
 			if (iw.insertionIndex < 0) {
@@ -131,6 +136,16 @@ namespace Twist {
 
 	void Widget::insertChild(std::unique_ptr<Widget> child, size_t index) {
 		insertionBuffer.push_back(WidgetTemp(std::move(child), index));
+		requestLayout();
+	}
+
+	void Widget::removeChild(size_t index) {
+		for (auto i : deletionBuffer) {
+			if (i < index) {
+				--index;
+			}
+		}
+		deletionBuffer.push_back(index);
 		requestLayout();
 	}
 

@@ -47,6 +47,13 @@ namespace Twist {
 			GL::rectangle(0, d * bounds.y - Theme::DividerWidth.y() * 0.5f, bounds.x, Theme::DividerWidth.y());
 			++division;
 		}
+
+		if (shouldMerge) {
+			GL::color(Twist::Color(0.3f, 0.3f, 0.3f, 0.2f));
+			Vector l = children[mergeChild]->getLocation();
+			Vector b = children[mergeChild]->getBounds();
+			GL::rectangle(l.x, l.y, b.x, b.y);
+		}
 	}
 
 	void VerticalDivider::onMouseDown(MouseEvent& me) {
@@ -60,11 +67,21 @@ namespace Twist {
 		if (me.button == MouseEvent::Left) {
 			movingDivision = false;
 		}
+		if (shouldMerge) {
+			removeChild(mergeChild);
+			divisions.erase(divisions.begin() + mergeDivision);
+		}
+		mergeChild = -1;
+		shouldMerge = false;
 	}
 
 	void VerticalDivider::onMouseMove(MouseEvent& me) {
 		Vector bounds = getBounds();
 		if (bounds.y < 0.001f) return;
+
+		if (mergeChild > -1) {
+			shouldMerge = children[mergeChild]->isLocal(Vector(me.x, me.y));
+		}
 
 		if (movingDivision) {
 			divisions[activeDivision] = Util::clamp<float>(me.y / bounds.y, 0, 1);
@@ -96,6 +113,25 @@ namespace Twist {
 		auto dc = std::make_unique<DividerChild>();
 		dc->parentType = DividerChild::Vertical;
 		Widget::addChild(std::move(dc));
+	}
+
+	void VerticalDivider::initMerge(Widget& child, bool isTop) {
+		size_t index = 0;
+
+		for (auto &&w : children) {
+			if (w.get() == &child) {
+				break;
+			}
+
+			++index;
+		}
+
+		if (index == 0 && !isTop) return;
+		if (index == children.size() - 1 && isTop) return;
+
+		mergeChild = isTop ? index + 1 : index - 1;
+		mergeDivision = isTop ? index : index - 1;
+		shouldMerge = true;
 	}
 
 	void VerticalDivider::split(Widget& child, bool isTop) {

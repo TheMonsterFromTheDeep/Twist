@@ -39,6 +39,10 @@ namespace Twist {
 				VerticalDivider& parent = static_cast<VerticalDivider&>(getParent());
 				if (activeCorner == BottomLeft) {
 					switch(quadrant) {
+					case 1:
+						Debug << "init merge...\n";
+						parent.initMerge(*this, false);
+						break;
 					case 3:
 						parent.split(*this, false);
 						break;
@@ -48,6 +52,9 @@ namespace Twist {
 					switch(quadrant) {
 					case 1:
 						parent.split(*this, true);
+						break;
+					case 3:
+						parent.initMerge(*this, true);
 						break;
 					}
 				}
