@@ -24,11 +24,9 @@ namespace Twist {
 
 			for (size_t i = 0; i < e.elements(); ++i) {
 				if (i < children.size() - 1)
-					size.x = divisions[i] * bounds.x - location.x;
+					size.x = divisions[i] * bounds.x - location.x - Theme::DividerWidth.x() * 0.5f;
 				else
 					size.x = bounds.x - location.x;
-
-				size.x -= Theme::DividerWidth.x() * 0.5f;
 
 				e.setBounds(i, size);
 				e.setLocation(i, location);
@@ -43,11 +41,9 @@ namespace Twist {
 
 			for (size_t i = 0; i < e.elements(); ++i) {
 				if (i < children.size() - 1)
-					size.y = divisions[i] * bounds.y - location.y;
+					size.y = divisions[i] * bounds.y - location.y - Theme::DividerWidth.y() * 0.5f;
 				else
 					size.y = bounds.y - location.y;
-
-				size.y -= Theme::DividerWidth.y() * 0.5f;
 
 				e.setBounds(i, size);
 				e.setLocation(i, location);
