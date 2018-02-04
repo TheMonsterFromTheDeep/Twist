@@ -103,6 +103,7 @@ namespace Twist {
 		void addChild(std::unique_ptr<Widget>);
 		void insertChild(std::unique_ptr<Widget>, size_t index);
 		void removeChild(size_t index);
+		void replaceChild(size_t index, std::unique_ptr<Widget>);
 
 		bool isLocal(Vector point);
 
@@ -141,6 +142,7 @@ namespace Twist {
 		bool shouldMerge = false;
 
 		bool isHorizontal = false;
+		void undivide(Widget&, std::unique_ptr<Widget> newChild);
 	public:
 		virtual void paint();
 		virtual void layout(LayoutEngine&);

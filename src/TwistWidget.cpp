@@ -139,6 +139,11 @@ namespace Twist {
 		requestLayout();
 	}
 
+	void Widget::replaceChild(size_t index, std::unique_ptr<Widget> child) {
+		child->parent = this;
+		children[index] = std::move(child);
+	}
+
 	void Widget::removeChild(size_t index) {
 		for (auto i : deletionBuffer) {
 			if (i < index) {

@@ -98,11 +98,33 @@ namespace Twist {
 			movingDivision = false;
 		}
 		if (shouldMerge) {
+			if (children.size() == 2 && hasParent()) {
+				Divider *parent = dynamic_cast<Divider*>(&getParent());
+				if (parent) {
+					parent->undivide(*this, std::move(children[mergeDivision]));
+					Widget::requestLayout();
+					return;
+				}
+			}
+
+			/* Normal merging happens when any of the above fails */
 			removeChild(mergeChild);
 			divisions.erase(divisions.begin() + mergeDivision);
 		}
 		mergeChild = -1;
 		shouldMerge = false;
+	}
+
+	void Divider::undivide(Widget& child, std::unique_ptr<Widget> newChild) {
+		size_t index = 0;
+		for (auto &&w : children) {
+			if (w.get() == &child) break;
+			++index;
+		}
+
+		if (index == children.size()) return;
+
+		replaceChild(index, std::move(newChild));
 	}
 
 	void Divider::onMouseMove(MouseEvent& me) {
@@ -203,21 +225,20 @@ namespace Twist {
 	}
 
 	void Divider::splitHorizontal(Widget& child, bool isRight) {
-		if (isHorizontal || children.size() < 2) {
-			isHorizontal = true;
+		size_t index = 0;
 
-			size_t index = 0;
-
-			for (auto &&w : children) {
-				if (w.get() == &child) {
-					break;
-				}
-
-				++index;
+		for (auto &&w : children) {
+			if (w.get() == &child) {
+				break;
 			}
 
-			if (index == children.size()) return;
+			++index;
+		}
 
+		if (index == children.size()) return;
+
+		if (isHorizontal || children.size() < 2) {
+			isHorizontal = true;
 			auto dc = std::make_unique<DividerChild>();
 
 			if (isRight) {
@@ -247,21 +268,32 @@ namespace Twist {
 				movingDivision = true;
 			}
 		}
+		else {
+			auto div = std::make_unique<Divider>();
+			div->isHorizontal = true;
+			if (!isRight) div->addChild();
+			div->Widget::addChild(std::move(children[index]));
+			if(isRight) div->addChild();
+			div->divisions.push_back(isRight ? 1.f : 0.f);
+			div->activeDivision = 0;
+			div->movingDivision = true;
+			replaceChild(index, std::move(div));
+		}
 	}
 
 	void Divider::splitVertical(Widget& child, bool isTop) {
+		size_t index = 0;
+
+		for (auto &&w : children) {
+			if (w.get() == &child) {
+				break;
+			}
+
+			++index;
+		}
+
 		if (!isHorizontal || children.size() < 2) {
 			isHorizontal = false;
-
-			size_t index = 0;
-
-			for (auto &&w : children) {
-				if (w.get() == &child) {
-					break;
-				}
-
-				++index;
-			}
 
 			if (index == children.size()) return;
 
@@ -293,6 +325,17 @@ namespace Twist {
 				activeDivision = index;
 				movingDivision = true;
 			}
+		}
+		else {
+			auto div = std::make_unique<Divider>();
+			div->isHorizontal = false;
+			if (!isTop) div->addChild();
+			div->Widget::addChild(std::move(children[index]));
+			if (isTop) div->addChild();
+			div->divisions.push_back(isTop ? 1.f : 0.f);
+			div->activeDivision = 0;
+			div->movingDivision = true;
+			replaceChild(index, std::move(div));
 		}
 	}
 }
