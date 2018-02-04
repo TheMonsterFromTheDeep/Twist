@@ -64,6 +64,23 @@ namespace Twist {
 						win.performMouseUp(me);
 					}
 					break;
+				case SDL_WINDOWEVENT: {
+						if (evt.window.event == SDL_WINDOWEVENT_RESIZED) {
+							int width = evt.window.data1;
+							int height = evt.window.data2;
+							glViewport(0, 0, width, height);
+
+							glMatrixMode(GL_PROJECTION);
+							glLoadIdentity();
+							glOrtho(0, width, 0, height, -10, 10);
+
+							glMatrixMode(GL_MODELVIEW);
+							win.bounds = Vector(width, height);
+
+							Widget::requestLayout();
+						}
+					}
+					break;
 				default: { }
 				}
 
