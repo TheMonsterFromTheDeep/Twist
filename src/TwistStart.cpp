@@ -64,14 +64,18 @@ namespace Twist {
 				default: { }
 				}
 
+				glDisable(GL_SCISSOR_TEST);
 				glClearColor(0.5f, 0.5f, 0.5f, 1.f);
 				glClear(GL_COLOR_BUFFER_BIT);
+				glEnable(GL_SCISSOR_TEST);
 
 				if (needLayoutUpdate) {
 					win.performLayout();
 					needLayoutUpdate = false;
 				}
+				GL::attachWidget(win);
 				win.paint();
+				GL::detachWidget();
 
 				SDL_GL_SwapWindow(active);
 			}

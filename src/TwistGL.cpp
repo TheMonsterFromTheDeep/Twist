@@ -1,4 +1,5 @@
 #include <map>
+#include <stack>
 
 #include <SDL_opengl.h>
 
@@ -6,8 +7,16 @@
 
 namespace Twist {
 	namespace GL {
-		static int cornerX = 0, cornerY = 0;
-		static int boundX = 0, boundY = 0;
+		std::stack<int> cornerX;
+		std::stack<int> cornerY;
+		std::stack<int> boundX;
+		std::stack<int> boundY;
+
+		int curCornerX = 0;
+		int curCornerY = 0;
+		int curBoundX = 0;
+		int curBoundY = 0;
+		int depth = 0;
 
 		static float scaleFactorX = 1;
 		static float scaleFactorY = 1;
@@ -17,44 +26,65 @@ namespace Twist {
 		}
 
 		void attachWidget(const Widget& child) {
-			Vector loc = child.getLocation();
-			cornerX += toInt(loc.x);
-			cornerY += toInt(loc.y);
-
 			Vector bounds = child.getBounds();
-			if (bounds.x < 0) bounds.x = 0;
-			if (bounds.y < 0) bounds.y = 0;
-			if (bounds.x > boundX) bounds.x = boundX;
-			if (bounds.y > boundY) bounds.y = boundY;
-			boundX = toInt(bounds.x);
-			boundY = toInt(bounds.y);
+			if(depth > 0) {
+				if (bounds.x < 0) bounds.x = 0;
+				if (bounds.y < 0) bounds.y = 0;
+				if (bounds.x > curBoundX) bounds.x = curBoundX;
+				if (bounds.y > curBoundY) bounds.y = curBoundY;
+			}
+			boundX.push(toInt(bounds.x));
+			boundY.push(toInt(bounds.y));
+
+			Vector loc = child.getLocation();
+			cornerX.push(curCornerX + toInt(loc.x));
+			cornerY.push(curCornerY + toInt(loc.y));
+
+			curCornerX = cornerX.top();
+			curCornerY = cornerY.top();
+			curBoundX = boundX.top();
+			curBoundY = boundY.top();
+
+			++depth;
 
 			reset();
 		}
 
-		void detachWidget(const Widget& child, const Widget& parent) {
-			Vector loc = child.getLocation();
-			cornerX -= toInt(loc.x);
-			cornerY -= toInt(loc.y);
+		void detachWidget() {
+			cornerX.pop();
+			cornerY.pop();
+			boundX.pop();
+			boundY.pop();
 
-			Vector bounds = parent.getBounds();
-			boundX = toInt(bounds.x);
-			boundY = toInt(bounds.y);
+			--depth;
+
+			if (depth > 0) {
+				curCornerX = cornerX.top();
+				curCornerY = cornerY.top();
+				curBoundX = boundX.top();
+				curBoundY = boundY.top();
+			}
+			else {
+				curCornerX = 0;
+				curCornerY = 0;
+				curBoundX = 0;
+				curBoundY = 0;
+			}
 
 			reset();
 		}
 
 		void scissor(float x, float y, float width, float height) {
-			int xi = Util::clamp(cornerX + toInt(x), cornerX, cornerX + boundX);
-			int yi = Util::clamp(cornerY + toInt(y), cornerY, cornerY + boundY);
+			int xi = Util::clamp(curCornerX + toInt(x), curCornerX, curCornerX + curBoundX);
+			int yi = Util::clamp(curCornerY + toInt(y), curCornerY, curCornerY + curBoundY);
 			glScissor(xi, yi,
-				Util::clamp(toInt(width ), xi - cornerX, boundX),
-				Util::clamp(toInt(height), yi - cornerY, boundY)
+				Util::clamp(toInt(width ), xi - curCornerX, curBoundX),
+				Util::clamp(toInt(height), yi - curCornerY, curBoundY)
 			);
 		}
 
 		void descissor() {
-			glScissor(cornerX, cornerY, boundX, boundY);
+			glScissor(curCornerX, curCornerY, curBoundX, curBoundY);
 		}
 
 		void translate(float x, float y) {
@@ -80,7 +110,7 @@ namespace Twist {
 			scaleFactorX = 1;
 			scaleFactorY = 1;
 
-			translate((float)cornerX, (float)cornerY);
+			translate((float)curCornerX, (float)curCornerY);
 		}
 
 		void beginStencil() {

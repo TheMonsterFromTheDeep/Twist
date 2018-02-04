@@ -7,7 +7,7 @@ namespace Twist {
 		for (auto &&w : children) {
 			GL::attachWidget(*w);
 			w->paint();
-			GL::detachWidget(*w, *this);
+			GL::detachWidget();
 		}
 	}
 

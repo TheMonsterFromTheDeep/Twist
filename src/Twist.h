@@ -185,7 +185,7 @@ namespace Twist {
 		 * children widgets. The process is to attach a child, paint it,
 		 * detach it, and repeat.
 		 */
-		void detachWidget(const Widget& child, const Widget& parent);
+		void detachWidget();
 
 		/* Sets the scissor test to an area within the current drawing context. 
 		 * It should be noted that this does not respect context transform.
