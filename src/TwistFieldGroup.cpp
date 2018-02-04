@@ -2,28 +2,43 @@
 
 namespace Twist {
 	void FieldGroup::layout(LayoutEngine& e) {
-		float width = getBounds().x / children.size();
-		getPreferredBounds();
+		Vector prefBounds = getPreferredBounds();
+		Vector actualBounds = getBounds();
 
-		Vector bounds(width, height);
+		Vector bounds(0, height);
+		if (layoutMode == Even)
+			bounds.x = prefBounds.x / children.size();
+
 		Vector location;
 
 		for (size_t i = 0; i < e.elements(); ++i) {
+			if(layoutMode == Proportional)
+				bounds.x = (e.getPreferredBounds(i).x / prefBounds.x) * actualBounds.x;
 			e.setBounds(i, bounds);
 			e.setLocation(i, location);
 			location.x += bounds.x;
 		}
 	}
 
+	void FieldGroup::setLayoutMode(LayoutMode mode) {
+		if (layoutMode != mode) {
+			layoutMode = mode;
+			Widget::requestLayout();
+		}
+	}
+
 	Vector FieldGroup::getPreferredBounds() {
+		float width = 0;
+
 		height = 0;
 		for (auto &&w : children) {
+			width += w->getPreferredBounds().x;
 			float newY = w->getPreferredBounds().y;
 			if (newY > height && newY != Widget::Unbounded) height = newY;
 		}
 
 		height /= (1 - Theme::FieldGroupMargins);
-		return Vector(Widget::Unbounded, height);
+		return Vector(width, height);
 	}
 
 	void FieldGroup::paint() {

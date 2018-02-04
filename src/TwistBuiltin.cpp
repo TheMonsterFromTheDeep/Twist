@@ -21,6 +21,10 @@ namespace Theme {
 
 	Twist::DpiXY<float> DividerSplitterWidth(10.f);
 
+	Twist::DpiX<float> MenuBarMargin(2.f);
+	Twist::Color MenuBarTop(Twist::Color::gray(0.47f));
+	Twist::Color MenuBarBottom(Twist::Color::gray(0.43f));
+
 	float CurveResolution(1.f);
 }
 

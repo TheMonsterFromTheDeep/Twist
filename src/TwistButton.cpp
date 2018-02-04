@@ -25,7 +25,10 @@ namespace Twist {
 	}
 
 	Vector Button::getPreferredBounds() {
-		return Vector(Widget::Unbounded, Theme::FontSize * 1.5f);
+		Body.setSize((int)Theme::FontSize);
+		Vector fontBounds = Body.bounds(text.c_str());
+		float y = Theme::FontSize * 1.5f;
+		return Vector(fontBounds.x + y * 0.5f, y);
 	}
 
 	void Button::onMouseEnter() {

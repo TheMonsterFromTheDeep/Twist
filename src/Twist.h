@@ -178,13 +178,21 @@ namespace Twist {
 	};
 
 	class FieldGroup : public Widget {
-	private:
-		float height;
 	public:
+		enum LayoutMode {
+			Proportional,
+			Even
+		};
+
 		virtual void paint();
 		virtual void layout(LayoutEngine&);
 
 		virtual Vector getPreferredBounds();
+
+		void setLayoutMode(LayoutMode);
+	private:
+		float height;
+		LayoutMode layoutMode = Even;
 	};
 
 	class Button : public Widget {
@@ -201,6 +209,13 @@ namespace Twist {
 		void onMouseLeave();
 		void onMouseDown(MouseEvent&);
 		void onMouseUp(MouseEvent&);
+	};
+
+	class MenuBar : public Widget {
+	public:
+		virtual Vector getPreferredBounds();
+		virtual void layout(LayoutEngine&);
+		virtual void paint();
 	};
 
 	class Color {
@@ -437,6 +452,10 @@ namespace Theme {
 	extern float DividerActivationMargin;
 
 	extern Twist::DpiXY<float> DividerSplitterWidth;
+
+	extern Twist::DpiX<float> MenuBarMargin;
+	extern Twist::Color MenuBarTop;
+	extern Twist::Color MenuBarBottom;
 
 	extern float CurveResolution;
 }

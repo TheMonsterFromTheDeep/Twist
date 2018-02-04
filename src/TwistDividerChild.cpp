@@ -5,6 +5,8 @@ using Assets::Images::DividerTopRight;
 
 namespace Twist {
 	void DividerChild::paint() {
+		Widget::paint();
+
 		float w = Theme::DividerSplitterWidth.x();
 		float h = Theme::DividerSplitterWidth.y();
 		Vector bounds = getBounds();
