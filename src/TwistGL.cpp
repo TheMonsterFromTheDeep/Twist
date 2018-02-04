@@ -22,6 +22,10 @@ namespace Twist {
 			cornerY += toInt(loc.y);
 
 			Vector bounds = child.getBounds();
+			if (bounds.x < 0) bounds.x = 0;
+			if (bounds.y < 0) bounds.y = 0;
+			if (bounds.x > boundX) bounds.x = boundX;
+			if (bounds.y > boundY) bounds.y = boundY;
 			boundX = toInt(bounds.x);
 			boundY = toInt(bounds.y);
 

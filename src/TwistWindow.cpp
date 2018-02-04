@@ -71,6 +71,7 @@ namespace Twist {
 			throw std::runtime_error(SDL_GetError());
 		}
 
+		glEnable(GL_SCISSOR_TEST);
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_BLEND);
 		

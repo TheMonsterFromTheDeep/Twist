@@ -67,15 +67,15 @@ namespace Twist {
 
 	void Widget::performMouseMove(MouseEvent& me) {
 		onMouseMove(me);
-		if (me.captured) return;
+
 		for (auto &&w : children) {
 			MouseEvent ce = me.childEvent(*w);
+
 			if (w->isLocal(Vector(me.x, me.y))) {
 				if (!w->containsMouse) {
 					w->containsMouse = true;
 					w->onMouseEnter();
 				}
-				w->performMouseMove(ce);
 			}
 			else {
 				if (w->containsMouse) {
@@ -83,6 +83,9 @@ namespace Twist {
 					w->onMouseLeave();
 				}
 			}
+
+			if (!me.captured)
+				w->performMouseMove(ce);
 		}
 	}
 
