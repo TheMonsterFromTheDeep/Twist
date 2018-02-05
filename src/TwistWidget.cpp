@@ -107,13 +107,13 @@ namespace Twist {
 			if (w->isLocal(Vector(me.x, me.y))) {
 				if (!w->containsMouse) {
 					w->containsMouse = true;
-					w->onMouseEnter();
+					if(!focusOwner || focusOwner == w.get()) w->onMouseEnter();
 				}
 			}
 			else {
 				if (w->containsMouse) {
 					w->containsMouse = false;
-					w->onMouseLeave();
+					if (!focusOwner || focusOwner == w.get()) w->onMouseLeave();
 				}
 			}
 
