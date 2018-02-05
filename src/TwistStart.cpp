@@ -48,7 +48,7 @@ namespace Twist {
 		win.performLayout();
 
 		for(;;) {
-			if (SDL_PollEvent(&evt)) {
+			if (SDL_WaitEvent(&evt)) {
 				switch (evt.type) {
 				case SDL_QUIT:
 					return;
