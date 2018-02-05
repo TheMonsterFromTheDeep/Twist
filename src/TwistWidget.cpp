@@ -4,6 +4,15 @@ namespace Twist {
 	WidgetTemp::WidgetTemp(std::unique_ptr<Widget> widget_, int insertionIndex_) : widget(std::move(widget_)), insertionIndex(insertionIndex_) { }
 
 	const float Widget::Unbounded = -1;
+	static Widget* focusOwner = nullptr;
+
+	void Widget::stealFocus() {
+		focusOwner = this;
+	}
+
+	void Widget::releaseFocus() {
+		focusOwner = nullptr;
+	}
 
 	void Widget::paint() {
 		for (auto &&w : children) {
@@ -58,8 +67,10 @@ namespace Twist {
 	}
 
 	void Widget::performMouseDown(MouseEvent& me) {
-		if (containsMouse || captureExternalMouseEvents) {
-			onMouseDown(me);
+		if (containsMouse || captureExternalMouseEvents || focusOwner) {
+			if (!focusOwner || focusOwner == this) {
+				onMouseDown(me);
+			}
 		}
 		if (me.captured) return;
 		for (auto &&w : children) {
@@ -69,8 +80,10 @@ namespace Twist {
 	}
 
 	void Widget::performMouseUp(MouseEvent& me) {
-		if (containsMouse || captureExternalMouseEvents) {
-			onMouseUp(me);
+		if (containsMouse || captureExternalMouseEvents || focusOwner) {
+			if (!focusOwner || focusOwner == this) {
+				onMouseUp(me);
+			}
 		}
 		if (me.captured) return;
 		for (auto &&w : children) {
@@ -84,7 +97,9 @@ namespace Twist {
 	void Widget::onMouseMove(MouseEvent& me) { }
 
 	void Widget::performMouseMove(MouseEvent& me) {
-		onMouseMove(me);
+		if (!focusOwner || focusOwner == this) {
+			onMouseMove(me);
+		}
 
 		for (auto &&w : children) {
 			MouseEvent ce = me.childEvent(*w);

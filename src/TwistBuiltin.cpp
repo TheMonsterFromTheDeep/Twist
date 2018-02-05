@@ -42,6 +42,7 @@ namespace Assets {
 	namespace Images {
 		Twist::Image DividerTopRight;
 		Twist::Image DividerBottomLeft;
-		Twist::Image Dropdown;
+		Twist::Image DropdownClosed;
+		Twist::Image DropdownOpen;
 	}
 }

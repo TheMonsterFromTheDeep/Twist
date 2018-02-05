@@ -62,7 +62,12 @@ namespace Twist {
 
 		GL::endStencil();
 
-		Widget::paint();
+		for (auto &&w : children) {
+			GL::attachWidget(*w);
+			w->paint();
+			GL::detachWidget();
+			GL::enableStencil();
+		}
 
 		GL::noStencil();
 

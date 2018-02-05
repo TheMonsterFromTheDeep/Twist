@@ -118,6 +118,9 @@ namespace Twist {
 
 		bool hasParent();
 		Widget& getParent();
+
+		void stealFocus();
+		void releaseFocus();
 	};
 
 	class LayoutEngine {
@@ -220,6 +223,10 @@ namespace Twist {
 
 	class Dropdown : public Widget {
 		bool highlighted = false;
+		bool open = false;
+
+		int selectedIndex = 0;
+		int highlightedIndex;
 	public:
 		std::vector<std::string> items;
 
@@ -228,6 +235,8 @@ namespace Twist {
 
 		void onMouseEnter();
 		void onMouseLeave();
+		void onMouseDown(MouseEvent&);
+		void onMouseMove(MouseEvent&);
 	};
 
 	class Color {
@@ -287,6 +296,7 @@ namespace Twist {
 		void endStencil();
 		/* Disables stencil */
 		void noStencil();
+		void enableStencil();
 
 		void color(Color c);
 
@@ -441,7 +451,8 @@ namespace Assets {
 	namespace Images {
 		extern Twist::Image DividerTopRight;
 		extern Twist::Image DividerBottomLeft;
-		extern Twist::Image Dropdown;
+		extern Twist::Image DropdownClosed;
+		extern Twist::Image DropdownOpen;
 	}
 }
 

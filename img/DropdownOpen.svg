@@ -14,8 +14,8 @@
    viewBox="0 0 26.458333 26.458334"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.1 r15371"
-   sodipodi:docname="Dropdown.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="DropdownOpen.svg"
    inkscape:export-filename="C:\Users\Benjamin Wall\source\repos\twist\img\Dropdown.png"
    inkscape:export-xdpi="245.75999"
    inkscape:export-ydpi="245.75999">
@@ -29,8 +29,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.2"
-     inkscape:cx="38.647917"
-     inkscape:cy="50.671668"
+     inkscape:cx="28.871131"
+     inkscape:cy="63.57759"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -61,11 +61,14 @@
        style="fill:#333333;stroke:none;stroke-width:1.09812832;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
        id="path4485"
        cx="13.229167"
-       cy="283.77081"
-       r="10.583333" />
+       cy="-283.77081"
+       r="10.583333"
+       inkscape:export-xdpi="245.75999"
+       inkscape:export-ydpi="245.75999"
+       transform="scale(1,-1)" />
     <path
-       style="fill:#ffffff;stroke:none;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:0.99208862;stroke-miterlimit:4;stroke-dasharray:none"
-       d="M 7.5007695,280.46353 H 18.957564 l -5.728397,9.92185 z"
+       style="fill:#ffffff;fill-opacity:0.99208859;stroke:none;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 7.5007695,287.0781 H 18.957564 l -5.728397,-9.92185 z"
        id="path4487"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />

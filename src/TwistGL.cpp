@@ -75,12 +75,14 @@ namespace Twist {
 		}
 
 		void scissor(float x, float y, float width, float height) {
-			int xi = Util::clamp(curCornerX + toInt(x), curCornerX, curCornerX + curBoundX);
+			/*int xi = Util::clamp(curCornerX + toInt(x), curCornerX, curCornerX + curBoundX);
 			int yi = Util::clamp(curCornerY + toInt(y), curCornerY, curCornerY + curBoundY);
 			glScissor(xi, yi,
 				Util::clamp(toInt(width ), xi - curCornerX, curBoundX),
 				Util::clamp(toInt(height), yi - curCornerY, curBoundY)
-			);
+			);*/
+			Debug << "Scissor: " << width << ", " << height << "\n";
+			glScissor(curCornerX + toInt(x), curCornerY + toInt(y), toInt(width), toInt(height));
 		}
 
 		void descissor() {
@@ -132,6 +134,10 @@ namespace Twist {
 
 		void noStencil() {
 			glDisable(GL_STENCIL_TEST);
+		}
+
+		void enableStencil() {
+			glEnable(GL_STENCIL_TEST);
 		}
 
 		void color(Color c) {
