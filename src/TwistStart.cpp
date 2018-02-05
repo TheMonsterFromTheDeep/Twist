@@ -10,6 +10,7 @@ static void registerBuiltinAssets() {
 
 	Assets::Images::DividerBottomLeft.load("img/DividerBottomLeft.png");
 	Assets::Images::DividerTopRight.load("img/DividerTopRight.png");
+	Assets::Images::Dropdown.load("img/Dropdown.png");
 
 	registered = true;
 }

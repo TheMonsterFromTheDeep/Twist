@@ -218,6 +218,18 @@ namespace Twist {
 		virtual void paint();
 	};
 
+	class Dropdown : public Widget {
+		bool highlighted = false;
+	public:
+		std::vector<std::string> items;
+
+		void paint();
+		virtual Vector getPreferredBounds();
+
+		void onMouseEnter();
+		void onMouseLeave();
+	};
+
 	class Color {
 	public:
 		float r, g, b, a;
@@ -429,6 +441,7 @@ namespace Assets {
 	namespace Images {
 		extern Twist::Image DividerTopRight;
 		extern Twist::Image DividerBottomLeft;
+		extern Twist::Image Dropdown;
 	}
 }
 
@@ -445,6 +458,12 @@ namespace Theme {
 	extern Twist::Color ButtonPressedTop;
 	extern Twist::Color ButtonPressedBottom;
 	extern Twist::Color ButtonFontColor;
+
+	extern Twist::Color DropdownTop;
+	extern Twist::Color DropdownBottom;
+	extern Twist::Color DropdownHighlightedTop;
+	extern Twist::Color DropdownHighlightedBottom;
+	extern Twist::Color DropdownFont;
 
 	extern Twist::Color DividerColor;
 	extern Twist::Color DividerActiveColor;

@@ -14,6 +14,12 @@ namespace Theme {
 	Twist::Color ButtonPressedBottom(Twist::Color::gray(0.7f));
 	Twist::Color ButtonFontColor(Twist::Color::gray(0.1f));
 
+	Twist::Color DropdownTop(Twist::Color::gray(0.25f));
+	Twist::Color DropdownBottom(Twist::Color::gray(0.2f));
+	Twist::Color DropdownHighlightedTop(Twist::Color::rgbFromHex(0x6287c5));
+	Twist::Color DropdownHighlightedBottom(Twist::Color::rgbFromHex(0x486eac));
+	Twist::Color DropdownFont(Twist::Color::gray(0.9f));
+
 	Twist::Color DividerColor(Twist::Color::gray(0.3f));
 	Twist::Color DividerActiveColor(Twist::Color::gray(0.4f));
 	Twist::DpiXY<float> DividerWidth(2.f);
@@ -36,5 +42,6 @@ namespace Assets {
 	namespace Images {
 		Twist::Image DividerTopRight;
 		Twist::Image DividerBottomLeft;
+		Twist::Image Dropdown;
 	}
 }
