@@ -1,14 +1,10 @@
 #ifndef TWIST_H_
 #define TWIST_H_
 
-#include <functional>
-#include <string>
-#include <utility>
-#include <vector>
-#include <memory>
-#include <map>
-
-#include "geometry.h"
+#include "Include.h"
+#include "Widget.h"
+#include "Dropdown.h"
+#include "Image.h"
 
 namespace Twist {
 	namespace Util {
@@ -37,103 +33,7 @@ namespace Twist {
 		}
 	}
 
-	class Window;
-	class Widget;
-
-	class MouseEvent {
-	public:
-		enum Button {
-			None,
-			Left,
-			Middle,
-			Right
-		};
-
-		MouseEvent(float x_, float y_, Button button_);
-
-		float x, y;
-		Button button;
-		bool captured = false;
-
-		MouseEvent childEvent(const Widget&) const;
-	};
-
-	class LayoutEngine;
-
-	class WidgetTemp {
-	public:
-		std::unique_ptr<Widget> widget;
-		int insertionIndex;
-
-		WidgetTemp(std::unique_ptr<Widget> widget_, int insertionIndex_ = -1);
-	};
-
-	class Widget {
-		Vector location;
-		Vector bounds;
-
-		bool containsMouse = false;
-
-		friend class Window;
-		friend class LayoutEngine;
-		friend void start(Window&);
-
-		void performMouseDown(MouseEvent&);
-		void performMouseUp(MouseEvent&);
-		void performMouseMove(MouseEvent&);
-		void performLayout();
-
-		std::vector<WidgetTemp> insertionBuffer;
-		std::vector<size_t> deletionBuffer;
-
-		Widget* parent = nullptr;
-	protected:
-		std::vector<std::unique_ptr<Widget>> children;
-		
-		bool captureExternalMouseEvents = false;
-	public:
-		Vector getLocation() const;
-
-		virtual void paint();
-		Vector getBounds() const;
-		virtual Vector getPreferredBounds();
-
-		virtual void layout(LayoutEngine&);
-
-		void addChild(std::unique_ptr<Widget>);
-		void insertChild(std::unique_ptr<Widget>, size_t index);
-		void removeChild(size_t index);
-		void replaceChild(size_t index, std::unique_ptr<Widget>);
-
-		bool isLocal(Vector point);
-
-		virtual void onMouseEnter();
-		virtual void onMouseLeave();
-		virtual void onMouseMove(MouseEvent&);
-		virtual void onMouseDown(MouseEvent&);
-		virtual void onMouseUp(MouseEvent&);
-
-		static void requestLayout();
-		static const float Unbounded;
-
-		bool hasParent();
-		Widget& getParent();
-
-		void stealFocus();
-		void releaseFocus();
-	};
-
-	class LayoutEngine {
-		Widget& owner;
-	public:
-		LayoutEngine(Widget& owner_);
-
-		size_t elements();
-		Vector getPreferredBounds(size_t index);
-
-		void setLocation(size_t index, Vector location);
-		void setBounds(size_t index, Vector location);
-	};
+	
 
 	class Divider : public Widget {
 		std::vector<float> divisions;
@@ -221,23 +121,7 @@ namespace Twist {
 		virtual void paint();
 	};
 
-	class Dropdown : public Widget {
-		bool highlighted = false;
-		bool open = false;
-
-		int selectedIndex = 0;
-		int highlightedIndex;
-	public:
-		std::vector<std::string> items;
-
-		void paint();
-		virtual Vector getPreferredBounds();
-
-		void onMouseEnter();
-		void onMouseLeave();
-		void onMouseDown(MouseEvent&);
-		void onMouseMove(MouseEvent&);
-	};
+	
 
 	class Color {
 	public:
@@ -317,26 +201,6 @@ namespace Twist {
 		void rectangle(float x, float y, float width, float height);
 		void rectangleV(float x, float y, float width, float height, Color top, Color bottom);
 		void roundRectangle(float x, float y, float width, float height, float radius);
-	};
-
-	class Image {
-		unsigned int glId;
-
-		float width_, height_;
-	public:
-		Image();
-
-		float width();
-		float height();
-
-		void load(const char* path);
-		void draw(float x, float y);
-		void draw(float x, float y, float width, float height);
-
-		void bind();
-		void drawBound(float x, float y);
-		void drawBound(float x, float y, float width, float height);
-		void unbind();
 	};
 
 	class Font {
@@ -475,6 +339,7 @@ namespace Theme {
 	extern Twist::Color DropdownHighlightedTop;
 	extern Twist::Color DropdownHighlightedBottom;
 	extern Twist::Color DropdownFont;
+	extern Twist::DpiX<float> DropdownDivisionWidth;
 
 	extern Twist::Color DividerColor;
 	extern Twist::Color DividerActiveColor;

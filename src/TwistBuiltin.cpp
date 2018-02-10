@@ -19,6 +19,7 @@ namespace Theme {
 	Twist::Color DropdownHighlightedTop(Twist::Color::rgbFromHex(0x6287c5));
 	Twist::Color DropdownHighlightedBottom(Twist::Color::rgbFromHex(0x486eac));
 	Twist::Color DropdownFont(Twist::Color::gray(0.9f));
+	Twist::DpiX<float> DropdownDivisionWidth(0.5f);
 
 	Twist::Color DividerColor(Twist::Color::gray(0.3f));
 	Twist::Color DividerActiveColor(Twist::Color::gray(0.4f));

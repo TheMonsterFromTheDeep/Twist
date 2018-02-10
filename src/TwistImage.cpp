@@ -20,7 +20,14 @@ namespace Twist {
 		glGenTextures(1, &glId);
 		glBindTexture(GL_TEXTURE_2D, glId);
 
+		if (glGetError() != GL_NO_ERROR) {
+			throw std::runtime_error("Twist: Could not create OpenGL texture for image. Perhaps assets were loaded before a window was active?");
+		}
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		if (glGetError() != GL_NO_ERROR) {
+			throw std::runtime_error("Twist: Could not load image data into OpenGL texture. Perhaps the image asset does not exist?");
+		}
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
