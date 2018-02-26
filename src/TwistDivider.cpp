@@ -97,7 +97,11 @@ namespace Twist {
 			if (children.size() == 2 && hasParent()) {
 				Divider *parent = dynamic_cast<Divider*>(&getParent());
 				if (parent) {
-					parent->undivide(*this, std::move(children[mergeDivision]));
+					/* If the child to replace is 0 (mergeChild == 0), we want to replace ourselves with child 1
+					 * and vice versa.
+					 * Simply subtracting mergeChild from 1 gives us this relationship.
+					 */
+					parent->undivide(*this, std::move(children[1 - mergeChild]));
 					Widget::requestLayout();
 					return;
 				}

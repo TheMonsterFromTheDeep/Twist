@@ -33,7 +33,12 @@ namespace Twist {
 		}
 	}
 
-	
+	class MenuBar : public Widget {
+	public:
+		virtual Vector getPreferredBounds();
+		virtual void layout(LayoutEngine&);
+		virtual void paint();
+	};
 
 	class Divider : public Widget {
 		std::vector<float> divisions;
@@ -74,6 +79,8 @@ namespace Twist {
 		bool active;
 		Vector actionCenter;
 	public:
+		DividerChild(std::unique_ptr<MenuBar> menubar=std::make_unique<MenuBar>());
+
 		virtual void paint();
 
 		virtual void onMouseMove(MouseEvent&);
@@ -112,16 +119,7 @@ namespace Twist {
 		void onMouseLeave();
 		void onMouseDown(MouseEvent&);
 		void onMouseUp(MouseEvent&);
-	};
-
-	class MenuBar : public Widget {
-	public:
-		virtual Vector getPreferredBounds();
-		virtual void layout(LayoutEngine&);
-		virtual void paint();
-	};
-
-	
+	};	
 
 	class Color {
 	public:

@@ -4,6 +4,10 @@ using Assets::Images::DividerBottomLeft;
 using Assets::Images::DividerTopRight;
 
 namespace Twist {
+	DividerChild::DividerChild(std::unique_ptr<MenuBar> menuBar) {
+		addChild(std::move(menuBar));
+	}
+
 	void DividerChild::paint() {
 		Widget::paint();
 
