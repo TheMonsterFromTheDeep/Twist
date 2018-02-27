@@ -81,7 +81,6 @@ namespace Twist {
 				Util::clamp(toInt(width ), xi - curCornerX, curBoundX),
 				Util::clamp(toInt(height), yi - curCornerY, curBoundY)
 			);*/
-			Debug << "Scissor: " << width << ", " << height << "\n";
 			glScissor(curCornerX + toInt(x), curCornerY + toInt(y), toInt(width), toInt(height));
 		}
 

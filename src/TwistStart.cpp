@@ -1,5 +1,7 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <locale>
+#include <codecvt>
 #include "Twist.h"
 
 static void registerBuiltinAssets() {
@@ -65,6 +67,26 @@ namespace Twist {
 				case SDL_MOUSEBUTTONUP: {
 						MouseEvent me((float)evt.button.x, invertY(win, evt.button.y), getButton(evt.button.button));
 						win.performMouseUp(me);
+					}
+					break;
+				case SDL_KEYDOWN: {
+						KeyEvent ke;
+						ke.keycode = evt.key.keysym.sym;
+						win.performKeyDown(ke);
+					}
+					break;
+				case SDL_KEYUP: {
+						KeyEvent ke;
+						ke.keycode = evt.key.keysym.sym;
+						win.performKeyUp(ke);
+					}
+					break;
+				case SDL_TEXTINPUT: {
+						std::string source(evt.edit.text);
+						std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+						TextEvent te;
+						te.text = converter.from_bytes(source);
+						win.performText(te);
 					}
 					break;
 				case SDL_WINDOWEVENT: {

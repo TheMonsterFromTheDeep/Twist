@@ -5,6 +5,7 @@
 #include "Widget.h"
 #include "Dropdown.h"
 #include "Image.h"
+#include "TextField.h"
 
 namespace Twist {
 	namespace Util {
@@ -213,7 +214,10 @@ namespace Twist {
 		void setSize(int pixels);
 
 		Vector bounds(const char* string);
+		Vector bounds(const wchar_t* string);
 
+		void render(const wchar_t* string, float x, float y);
+		void render(const wchar_t* string, Vector position);
 		void render(const char* string, float x, float y);
 		void render(const char* string, Vector position);
 	};
@@ -331,6 +335,11 @@ namespace Theme {
 	extern Twist::Color ButtonPressedTop;
 	extern Twist::Color ButtonPressedBottom;
 	extern Twist::Color ButtonFontColor;
+
+	extern Twist::Color TextFieldBackground;
+	extern Twist::Color TextFieldFont;
+	extern Twist::Color TextFieldCursor;
+	extern Twist::DpiX<float> TextFieldCursorWidth;
 
 	extern Twist::Color DropdownTop;
 	extern Twist::Color DropdownBottom;

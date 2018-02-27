@@ -14,6 +14,11 @@ namespace Theme {
 	Twist::Color ButtonPressedBottom(Twist::Color::gray(0.7f));
 	Twist::Color ButtonFontColor(Twist::Color::gray(0.1f));
 
+	Twist::Color TextFieldBackground(Twist::Color::gray(0.85f));
+	Twist::Color TextFieldFont(Twist::Color::gray(0.05f));
+	Twist::Color TextFieldCursor(Twist::Color::gray(0.2f));
+	Twist::DpiX<float> TextFieldCursorWidth(1.f);
+
 	Twist::Color DropdownTop(Twist::Color::gray(0.25f));
 	Twist::Color DropdownBottom(Twist::Color::gray(0.2f));
 	Twist::Color DropdownHighlightedTop(Twist::Color::rgbFromHex(0x6287c5));

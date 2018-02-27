@@ -1,5 +1,7 @@
 #include "Twist.h"
 
+#include <SDL.h>
+
 namespace Twist {
 	WidgetTemp::WidgetTemp(std::unique_ptr<Widget> widget_, int insertionIndex_) : widget(std::move(widget_)), insertionIndex(insertionIndex_) { }
 
@@ -66,11 +68,56 @@ namespace Twist {
 			   (v.y >= loc.y) && (v.y <= loc.y + bon.y);
 	}
 
+	void Widget::performKeyDown(KeyEvent& ke) {
+		onKeyDown(ke);
+		for (auto &&w : children) {
+			KeyEvent copy(ke);
+			w->performKeyDown(copy);
+		}
+	}
+
+	void Widget::performKeyUp(KeyEvent& ke) {
+		onKeyUp(ke);
+		for (auto &&w : children) {
+			KeyEvent copy(ke);
+			w->performKeyUp(copy);
+		}
+	}
+
+	void Widget::onKeyUp(KeyEvent& ke) { }
+	void Widget::onKeyDown(KeyEvent& ke) { }
+
+	void Widget::performText(TextEvent& te) {
+		onText(te);
+		for (auto &&w : children) {
+			w->performText(te);
+		}
+	}
+
+	void Widget::onText(TextEvent& te) { }
+
+	void TextEvent::beginInput() {
+		SDL_StartTextInput();
+	}
+
+	void TextEvent::endInput() {
+		SDL_StopTextInput();
+	}
+
 	void Widget::performMouseDown(MouseEvent& me) {
+		bool wasFocused = focused;
+		focused = false;
 		if (containsMouse || captureExternalMouseEvents || focusOwner) {
 			if (!focusOwner || focusOwner == this) {
 				onMouseDown(me);
 			}
+		}
+		if (containsMouse) {
+			focused = true;
+			onFocus();
+		}
+		if (!focused && wasFocused) {
+			onUnfocus();
 		}
 		if (me.captured) return;
 		for (auto &&w : children) {
@@ -95,6 +142,11 @@ namespace Twist {
 	void Widget::onMouseDown(MouseEvent& me) { }
 	void Widget::onMouseUp(MouseEvent& me) { }
 	void Widget::onMouseMove(MouseEvent& me) { }
+
+	void Widget::onFocus() { }
+	void Widget::onUnfocus() { }
+
+	bool Widget::isFocused() { return focused; }
 
 	void Widget::performMouseMove(MouseEvent& me) {
 		if (!focusOwner || focusOwner == this) {

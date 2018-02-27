@@ -25,6 +25,7 @@ namespace Twist {
 			float y = (height - bounds.y) * 0.5f;
 			e.setLocation(i, Vector(x, y));
 			e.setBounds(i, bounds);
+			x += bounds.x + Theme::MenuBarMargin;
 		}
 	}
 

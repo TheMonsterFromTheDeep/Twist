@@ -69,6 +69,26 @@ namespace Twist {
 		FT_Set_Pixel_Sizes(ft_face, 0, pixels);
 	}
 
+	Vector Font::bounds(const wchar_t *text) {
+		if (!ft_face) throw std::logic_error("Twist: Calculating bounds on unloaded font.");
+
+		const wchar_t *p;
+
+		FT_GlyphSlot g = ft_face->glyph;
+
+		float x = 0;
+		float y = 0;
+
+		for (p = text; *p; ++p) {
+			if (FT_Load_Char(ft_face, *p, FT_LOAD_RENDER))
+				continue;
+			x += g->advance.x * 0.015625f;
+			if (g->bitmap.rows > y) y = (float)g->bitmap.rows;
+		}
+
+		return Vector(x, y);
+	}
+
 	Vector Font::bounds(const char *text) {
 		if (!ft_face) throw std::logic_error("Twist: Calculating bounds on unloaded font.");
 
@@ -89,16 +109,20 @@ namespace Twist {
 		return Vector(x, y);
 	}
 
+	void Font::render(const wchar_t *text, Vector pos) {
+		render(text, pos.x, pos.y);
+	}
+
 	void Font::render(const char *text, Vector pos) {
 		render(text, pos.x, pos.y);
 	}
 
-	void Font::render(const char *text, float x, float y) {
+	void Font::render(const wchar_t *text, float x, float y) {
 		if (!ft_face) throw std::logic_error("Twist: Rendering text with unloaded font.");
 
 		glBindTexture(GL_TEXTURE_2D, font_texture);
 
-		const char *p;
+		const wchar_t *p;
 		FT_GlyphSlot g = ft_face->glyph;
 
 		for (p = text; *p; ++p) {
@@ -134,6 +158,56 @@ namespace Twist {
 
 				glTexCoord2f(0, 1);
 				glVertex2f(x2, -y2 - h);
+			glEnd();
+
+			x += g->advance.x * 0.015625f;
+			y += g->advance.y * 0.015625f;
+		}
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void Font::render(const char *text, float x, float y) {
+		if (!ft_face) throw std::logic_error("Twist: Rendering text with unloaded font.");
+
+		glBindTexture(GL_TEXTURE_2D, font_texture);
+
+		const char *p;
+		FT_GlyphSlot g = ft_face->glyph;
+
+		for (p = text; *p; ++p) {
+			if (FT_Load_Char(ft_face, *p, FT_LOAD_RENDER))
+				continue;
+
+			glTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				GL_RGBA,
+				g->bitmap.width,
+				g->bitmap.rows,
+				0,
+				GL_RED,
+				GL_UNSIGNED_BYTE,
+				g->bitmap.buffer
+			);
+
+			float x2 = x + g->bitmap_left;
+			float y2 = -y - g->bitmap_top;
+			float w = (float)g->bitmap.width;
+			float h = (float)g->bitmap.rows;
+
+			glBegin(GL_QUADS);
+			glTexCoord2f(0, 0);
+			glVertex2f(x2, -y2);
+
+			glTexCoord2f(1, 0);
+			glVertex2f(x2 + w, -y2);
+
+			glTexCoord2f(1, 1);
+			glVertex2f(x2 + w, -y2 - h);
+
+			glTexCoord2f(0, 1);
+			glVertex2f(x2, -y2 - h);
 			glEnd();
 
 			x += g->advance.x * 0.015625f;

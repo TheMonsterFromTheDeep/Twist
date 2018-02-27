@@ -26,6 +26,19 @@ namespace Twist {
 		MouseEvent childEvent(const Widget&) const;
 	};
 
+	class KeyEvent {
+	public:
+		int keycode;
+	};
+
+	class TextEvent {
+	public:
+		std::wstring text;
+
+		static void beginInput();
+		static void endInput();
+	};
+
 	class LayoutEngine;
 
 	class WidgetTemp {
@@ -41,6 +54,7 @@ namespace Twist {
 		Vector bounds;
 
 		bool containsMouse = false;
+		bool focused;
 
 		friend class Window;
 		friend class LayoutEngine;
@@ -49,6 +63,9 @@ namespace Twist {
 		void performMouseDown(MouseEvent&);
 		void performMouseUp(MouseEvent&);
 		void performMouseMove(MouseEvent&);
+		void performKeyDown(KeyEvent&);
+		void performKeyUp(KeyEvent&);
+		void performText(TextEvent&);
 		void performLayout();
 
 		std::vector<WidgetTemp> insertionBuffer;
@@ -74,12 +91,21 @@ namespace Twist {
 		void replaceChild(size_t index, std::unique_ptr<Widget>);
 
 		bool isLocal(Vector point);
+		bool isFocused();
+
+		virtual void onFocus();
+		virtual void onUnfocus();
 
 		virtual void onMouseEnter();
 		virtual void onMouseLeave();
 		virtual void onMouseMove(MouseEvent&);
 		virtual void onMouseDown(MouseEvent&);
 		virtual void onMouseUp(MouseEvent&);
+
+		virtual void onKeyDown(KeyEvent&);
+		virtual void onKeyUp(KeyEvent&);
+
+		virtual void onText(TextEvent&);
 
 		static void requestLayout();
 		static const float Unbounded;
