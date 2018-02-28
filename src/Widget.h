@@ -29,6 +29,14 @@ namespace Twist {
 	class KeyEvent {
 	public:
 		int keycode;
+
+		bool numDown;
+		bool capsDown;
+		bool modeDown;
+		bool controlDown;
+		bool shiftDown;
+		bool altDown;
+		bool guiDown;
 	};
 
 	class TextEvent {

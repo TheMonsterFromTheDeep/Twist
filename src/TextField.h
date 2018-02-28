@@ -8,7 +8,20 @@ namespace Twist {
 		std::wstring text;
 
 		int cursorPosition = 0;
+		int selectionPosition = 0;
+		bool hasSelection = false;
 		float pan = 0;
+
+		int lowSelectedIndex();
+		int highSelectedIndex();
+		int selectionLength();
+
+		int visualIndex(float x);
+		
+		bool readingMouse = false;
+
+		void putString(const std::wstring&);
+		void setCursorPosition(int);
 	public:
 		void onText(TextEvent&);
 		void paint();
@@ -20,6 +33,8 @@ namespace Twist {
 		void onKeyDown(KeyEvent&);
 
 		void onMouseDown(MouseEvent&);
+		void onMouseMove(MouseEvent&);
+		void onMouseUp(MouseEvent&);
 	};
 }
 

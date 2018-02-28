@@ -1,5 +1,9 @@
 #include "Twist.h"
+#include <SDL_clipboard.h>
 #include <SDL_keycode.h>
+
+#include <locale>
+#include <codecvt>
 
 using Assets::Fonts::Body;
 
@@ -46,28 +50,123 @@ namespace Twist {
 			
 			GL::color(Theme::TextFieldCursor);
 			GL::rectangle(textX + indexBounds.x, textY, Theme::TextFieldCursorWidth, Theme::FontSize);
+
+			if (hasSelection) {
+				Vector selectionBounds = Body.bounds(text.substr(0, selectionPosition).c_str());
+				GL::color(Theme::TextFieldSelection);
+				GL::rectangle(textX + indexBounds.x, textY, selectionBounds.x - indexBounds.x, Theme::FontSize);
+			}
+		}
+	}
+
+	void TextField::setCursorPosition(int newPosition) {
+		cursorPosition = newPosition;
+		if (cursorPosition < 0) cursorPosition = 0;
+		if (cursorPosition > text.length()) cursorPosition = text.length();
+	}
+
+	int TextField::lowSelectedIndex() {
+		return cursorPosition > selectionPosition ? selectionPosition : cursorPosition;
+	}
+
+	int TextField::highSelectedIndex() {
+		return cursorPosition < selectionPosition ? selectionPosition : cursorPosition;
+	}
+
+	int TextField::selectionLength() {
+		return cursorPosition > selectionPosition ? (cursorPosition - selectionPosition) : (selectionPosition - cursorPosition);
+	}
+
+	void TextField::putString(const std::wstring& put) {
+		if (hasSelection) {
+			text.replace(text.begin() + lowSelectedIndex(), text.begin() + highSelectedIndex(), put);
+			setCursorPosition(lowSelectedIndex() + put.length());
+			hasSelection = false;
+		}
+		else {
+			text.insert(cursorPosition, put);
+			cursorPosition += put.length();
 		}
 	}
 
 	void TextField::onText(TextEvent& te) {
 		if (isFocused()) {
-			text.insert(cursorPosition, te.text);
-			cursorPosition += te.text.length();
+			putString(te.text);
 		}
 	}
 
 	void TextField::onKeyDown(KeyEvent& ke) {
 		if (ke.keycode == SDLK_BACKSPACE) {
-			if (cursorPosition > 0 && cursorPosition <= text.length() && text.length() > 0) {
-				--cursorPosition;
-				text.erase(text.begin() + cursorPosition);
+			if (text.length() > 0) {
+				if (cursorPosition > 0 && cursorPosition <= text.length()) {
+					if (hasSelection) {
+						text.erase(text.begin() + lowSelectedIndex(), text.begin() + highSelectedIndex());
+						setCursorPosition(lowSelectedIndex());
+						hasSelection = false;
+					}
+					else {
+setCursorPosition(cursorPosition - 1);
+text.erase(text.begin() + cursorPosition);
+					}
+				}
 			}
 		}
 
-		if (ke.keycode == SDLK_LEFT) --cursorPosition;
-		if (ke.keycode == SDLK_RIGHT) ++cursorPosition;
-		if (cursorPosition < 0) cursorPosition = 0;
-		if (cursorPosition > text.length()) cursorPosition = text.length();
+		if (ke.keycode == SDLK_LEFT) {
+			if (hasSelection && !ke.shiftDown) {
+				setCursorPosition(highSelectedIndex());
+				hasSelection = false;
+			}
+			else {
+				if (ke.shiftDown) {
+					if (!hasSelection) selectionPosition = cursorPosition;
+					hasSelection = true;
+				}
+				setCursorPosition(cursorPosition - 1);
+			}
+		}
+		if (ke.keycode == SDLK_RIGHT) {
+			if (hasSelection && !ke.shiftDown) {
+				setCursorPosition(lowSelectedIndex());
+				hasSelection = false;
+			}
+			else {
+				if (ke.shiftDown) {
+					if (!hasSelection) selectionPosition = cursorPosition;
+					hasSelection = true;
+				}
+				setCursorPosition(cursorPosition + 1);
+			}
+		}
+
+		if (ke.controlDown) {
+			if (ke.keycode == SDLK_v) {
+				if (SDL_HasClipboardText()) {
+					char *clipboard = SDL_GetClipboardText();
+
+					std::string source(clipboard);
+					std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+					putString(converter.from_bytes(source));
+
+					SDL_free(clipboard);
+				}
+			}
+			if (ke.keycode == SDLK_c) {
+				if (hasSelection) {
+					std::wstring source(text.substr(lowSelectedIndex(), selectionLength()));
+					std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+					SDL_SetClipboardText(converter.to_bytes(source).c_str());
+				}
+			}
+		}
+
+
+		if (selectionPosition < 0) selectionPosition = 0;
+		if (selectionPosition > text.length()) selectionPosition = text.length();
+		if (!hasSelection) selectionPosition = cursorPosition;
+		if (selectionPosition == cursorPosition) { hasSelection = false; }
 	}
 
 	void TextField::onFocus() {
@@ -78,28 +177,57 @@ namespace Twist {
 		TextEvent::endInput();
 	}
 
-	void TextField::onMouseDown(MouseEvent& me) {
+	int TextField::visualIndex(float x) {
+		x -= pan;
+
 		Vector bounds = getBounds();
 
 		Body.setSize((int)Theme::FontSize);
 		Vector fontBounds = Body.bounds(text.c_str());
 
 		float textX = Theme::FontSize * 0.5f;
-		if (std::abs(me.x - textX) < Theme::TextFieldCursorWidth * 4) {
-			cursorPosition = 0;
-			return;
+		if (std::abs(x - textX) < Theme::TextFieldCursorWidth * 4) {
+			return 0;
 		}
 
-		for(size_t i = 0; i < text.length(); ++i) {
+		for (size_t i = 0; i < text.length(); ++i) {
 			Vector indexBounds = Body.bounds(text.substr(0, i).c_str());
 			float threshold = textX + indexBounds.x;
-			if (std::abs(me.x - threshold) < Theme::TextFieldCursorWidth * 4) {
-				cursorPosition = i;
+			if (std::abs(x - threshold) < Theme::TextFieldCursorWidth * 4) {
+				return i;
 				break;
 			}
 		}
 
 		Vector textBounds = Body.bounds(text.c_str());
-		if (me.x > textX + textBounds.x) cursorPosition = text.length();
+		if (x > textX + textBounds.x) return text.length();
+	}
+
+	void TextField::onMouseDown(MouseEvent& me) {
+		setCursorPosition(visualIndex(me.x));
+
+		selectionPosition = cursorPosition;
+		hasSelection = false;
+
+		readingMouse = true;
+		captureExternalMouseEvents = true;
+	}
+
+	void TextField::onMouseUp(MouseEvent& me) {
+		readingMouse = false;
+		captureExternalMouseEvents = false;
+	}
+
+	void TextField::onMouseMove(MouseEvent& me) {
+		if (!readingMouse) return;
+
+		int otherPosition = visualIndex(me.x);
+		if (otherPosition == cursorPosition) {
+			hasSelection = false;
+		}
+		else {
+			selectionPosition = otherPosition;
+			hasSelection = true;
+		}
 	}
 }

@@ -339,6 +339,7 @@ namespace Theme {
 	extern Twist::Color TextFieldBackground;
 	extern Twist::Color TextFieldFont;
 	extern Twist::Color TextFieldCursor;
+	extern Twist::Color TextFieldSelection;
 	extern Twist::DpiX<float> TextFieldCursorWidth;
 
 	extern Twist::Color DropdownTop;

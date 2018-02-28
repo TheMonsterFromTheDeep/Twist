@@ -72,6 +72,14 @@ namespace Twist {
 				case SDL_KEYDOWN: {
 						KeyEvent ke;
 						ke.keycode = evt.key.keysym.sym;
+						auto mod = evt.key.keysym.mod;
+						ke.numDown = mod & KMOD_NUM;
+						ke.capsDown = mod & KMOD_CAPS;
+						ke.modeDown = mod & KMOD_MODE;
+						ke.controlDown = mod & KMOD_CTRL;
+						ke.shiftDown = mod & KMOD_SHIFT;
+						ke.altDown = mod & KMOD_ALT;
+						ke.guiDown = mod & KMOD_GUI;
 						win.performKeyDown(ke);
 					}
 					break;
