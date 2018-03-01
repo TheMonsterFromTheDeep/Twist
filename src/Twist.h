@@ -79,6 +79,8 @@ namespace Twist {
 
 		bool active;
 		Vector actionCenter;
+
+		bool containsMouse = false;
 	public:
 		DividerChild(std::unique_ptr<MenuBar> menubar=std::make_unique<MenuBar>());
 
@@ -86,6 +88,9 @@ namespace Twist {
 
 		virtual void onMouseMove(MouseEvent&);
 		virtual void onMouseDown(MouseEvent&);
+
+		virtual void onMouseEnter();
+		virtual void onMouseLeave();
 	};
 
 	class FieldGroup : public Widget {
@@ -376,6 +381,7 @@ namespace Theme {
 
 	extern Twist::Color DividerColor;
 	extern Twist::Color DividerActiveColor;
+	extern Twist::Color DividerShadow;
 	extern Twist::DpiXY<float> DividerWidth;
 	extern float DividerActivationMargin;
 

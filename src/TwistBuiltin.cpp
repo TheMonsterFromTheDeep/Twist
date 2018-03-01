@@ -30,6 +30,7 @@ namespace Theme {
 
 	Twist::Color DividerColor(Twist::Color::gray(0.3f));
 	Twist::Color DividerActiveColor(Twist::Color::gray(0.4f));
+	Twist::Color DividerShadow(Twist::Color(0.1f, 0.1f, 0.1f, 0.02f));
 	Twist::DpiXY<float> DividerWidth(2.f);
 	float DividerActivationMargin(1.05f);
 

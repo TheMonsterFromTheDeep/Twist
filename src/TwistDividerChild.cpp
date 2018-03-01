@@ -20,6 +20,12 @@ namespace Twist {
 
 		GL::color((activeCorner == TopRight) ? Theme::DividerActiveColor : Theme::DividerColor);
 		DividerTopRight.draw(bounds.x - w, bounds.y - w, w, h);
+
+		if (!containsMouse) {
+			GL::color(Theme::DividerShadow);
+			Vector bounds = getBounds();
+			GL::rectangle(0, 0, bounds.x, bounds.y);
+		}
 	}
 
 	void DividerChild::onMouseMove(MouseEvent& me) {
@@ -100,5 +106,13 @@ namespace Twist {
 			active = true;
 			actionCenter = Vector(me.x, me.y);
 		}
+	}
+
+	void DividerChild::onMouseEnter() {
+		containsMouse = true;
+	}
+
+	void DividerChild::onMouseLeave() {
+		containsMouse = false;
 	}
 }
