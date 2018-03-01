@@ -202,8 +202,32 @@ namespace Twist {
 		void roundRectangle(float x, float y, float width, float height, float radius);
 	};
 
+	class Glyph {
+	public:
+		Glyph();
+		Glyph(unsigned int tex, float advanceX_, float advanceY_, float width_, float height_, float x_, float y_);
+
+		unsigned int texture;
+		float advanceX;
+		float advanceY;
+
+		float width;
+		float height;
+
+		float x;
+		float y;
+	};
+	
 	class Font {
 		struct FT_FaceRec_ *ft_face;
+
+		std::unordered_map<wchar_t, Glyph> &getGlyphMap(int);
+
+		std::unordered_map<int, std::unordered_map<wchar_t, Glyph>> glyphs;
+		std::unordered_map<wchar_t, Glyph> *currentGlyphMap;
+		int currentGlyphSize;
+
+		const Glyph& lookupGlyph(wchar_t);
 
 	public:
 		Font();

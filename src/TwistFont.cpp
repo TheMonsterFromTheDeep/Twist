@@ -9,7 +9,6 @@
 
 namespace Twist {
 	static FT_Library ft;
-	static GLuint font_texture;
 
 	static void initializeFreeType() {
 		static bool initialized = false;
@@ -18,26 +17,6 @@ namespace Twist {
 		if (FT_Init_FreeType(&ft)) {
 			throw std::runtime_error("Twist: Could not initialize FreeType.");
 		}
-
-		glGenTextures(1, &font_texture);
-		glBindTexture(GL_TEXTURE_2D, font_texture);
-
-		if (glGetError() != GL_NO_ERROR) {
-			throw std::runtime_error("Twist: Could not setup OpenGL for font rendering. Perhaps assets were loaded before a window was active?");
-		}
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ONE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ONE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ONE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
-
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		initialized = true;
 	}
@@ -55,7 +34,7 @@ namespace Twist {
 			throw std::invalid_argument("Twist: Could not load specified font.");
 		}
 
-		FT_Set_Pixel_Sizes(ft_face, 0, 24);
+		setSize(Theme::FontSize);
 	}
 
 	Font::~Font() {
@@ -63,10 +42,84 @@ namespace Twist {
 			FT_Done_Face(ft_face);
 	}
 
+	static Glyph emptyGlyph(0, 0, 0, 0, 0, 0, 0);
+
+	Glyph::Glyph(unsigned int texture_, float advanceX_, float advanceY_, float width_, float height_, float x_, float y_) :
+		texture(texture_), advanceX(advanceX_), advanceY(advanceY_), width(width_), height(height_), x(x_), y(y_) { }
+	Glyph::Glyph() : Glyph(0, 0, 0, 0, 0, 0, 0) { }
+
+	std::unordered_map<wchar_t, Glyph> &Font::getGlyphMap(int size) {
+		auto mapLoc = glyphs.find(size);
+		if (mapLoc == glyphs.end()) {
+			glyphs[size] = std::unordered_map<wchar_t, Glyph>();
+			return glyphs[size];
+		}
+
+		return mapLoc->second;
+	}
+
+	const Glyph& Font::lookupGlyph(wchar_t what) {
+		if (!currentGlyphMap) {
+			currentGlyphMap = &getGlyphMap(currentGlyphSize);
+		}
+
+		auto glyphLoc = currentGlyphMap->find(what);
+		if (glyphLoc != currentGlyphMap->end()) {
+			return glyphLoc->second;
+		}
+
+		FT_GlyphSlot g = ft_face->glyph;
+		if (FT_Load_Char(ft_face, what, FT_LOAD_RENDER)) {
+			/* This glyph cannot be drawn */
+			(*currentGlyphMap)[what] = emptyGlyph;
+			return emptyGlyph;
+		}
+
+		GLuint gltex;
+
+		glGenTextures(1, &gltex);
+		glBindTexture(GL_TEXTURE_2D, gltex);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ONE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ONE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ONE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED);
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RGBA,
+			g->bitmap.width,
+			g->bitmap.rows,
+			0,
+			GL_RED,
+			GL_UNSIGNED_BYTE,
+			g->bitmap.buffer
+		);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		(*currentGlyphMap)[what] = Glyph(gltex, g->advance.x * 0.015625f, g->advance.y * 0.015625f, g->bitmap.width, g->bitmap.rows, g->bitmap_left, g->bitmap_top);
+
+		return (*currentGlyphMap)[what];
+	}
+
 	void Font::setSize(int pixels) {
 		if (!ft_face) throw std::logic_error("Twist: Setting size of unloaded font.");
-
-		FT_Set_Pixel_Sizes(ft_face, 0, pixels);
+		
+		if (currentGlyphSize != pixels) {
+			FT_Set_Pixel_Sizes(ft_face, 0, pixels);
+			currentGlyphMap = &getGlyphMap(pixels);
+			currentGlyphSize = pixels;
+		}
 	}
 
 	Vector Font::bounds(const wchar_t *text) {
@@ -74,16 +127,14 @@ namespace Twist {
 
 		const wchar_t *p;
 
-		FT_GlyphSlot g = ft_face->glyph;
-
 		float x = 0;
 		float y = 0;
 
 		for (p = text; *p; ++p) {
-			if (FT_Load_Char(ft_face, *p, FT_LOAD_RENDER))
-				continue;
-			x += g->advance.x * 0.015625f;
-			if (g->bitmap.rows > y) y = (float)g->bitmap.rows;
+			auto g = lookupGlyph(*p);
+
+			x += g.advanceX;
+			if (g.height > y) y = g.height;
 		}
 
 		return Vector(x, y);
@@ -94,16 +145,14 @@ namespace Twist {
 
 		const char *p;
 
-		FT_GlyphSlot g = ft_face->glyph;
-
 		float x = 0;
 		float y = 0;
 
 		for (p = text; *p; ++p) {
-			if (FT_Load_Char(ft_face, *p, FT_LOAD_RENDER))
-				continue;
-			x += g->advance.x * 0.015625f;
-			if (g->bitmap.rows > y) y = (float)g->bitmap.rows;
+			auto g = lookupGlyph(*p);
+
+			x += g.advanceX;
+			if (g.height > y) y = g.height;
 		}
 
 		return Vector(x, y);
@@ -120,31 +169,17 @@ namespace Twist {
 	void Font::render(const wchar_t *text, float x, float y) {
 		if (!ft_face) throw std::logic_error("Twist: Rendering text with unloaded font.");
 
-		glBindTexture(GL_TEXTURE_2D, font_texture);
-
 		const wchar_t *p;
-		FT_GlyphSlot g = ft_face->glyph;
 
 		for (p = text; *p; ++p) {
-			if (FT_Load_Char(ft_face, *p, FT_LOAD_RENDER))
-				continue;
+			auto g = lookupGlyph(*p);
 
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RGBA,
-				g->bitmap.width,
-				g->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				g->bitmap.buffer
-			);
+			glBindTexture(GL_TEXTURE_2D, g.texture);
 
-			float x2 = x + g->bitmap_left;
-			float y2 = -y - g->bitmap_top;
-			float w = (float)g->bitmap.width;
-			float h = (float)g->bitmap.rows;
+			float x2 = x + g.x;
+			float y2 = -y - g.y;
+			float w = g.width;
+			float h = g.height;
 
 			glBegin(GL_QUADS);
 				glTexCoord2f(0, 0);
@@ -160,8 +195,8 @@ namespace Twist {
 				glVertex2f(x2, -y2 - h);
 			glEnd();
 
-			x += g->advance.x * 0.015625f;
-			y += g->advance.y * 0.015625f;
+			x += g.advanceX;
+			y += g.advanceY;
 		}
 
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -170,31 +205,17 @@ namespace Twist {
 	void Font::render(const char *text, float x, float y) {
 		if (!ft_face) throw std::logic_error("Twist: Rendering text with unloaded font.");
 
-		glBindTexture(GL_TEXTURE_2D, font_texture);
-
 		const char *p;
-		FT_GlyphSlot g = ft_face->glyph;
 
 		for (p = text; *p; ++p) {
-			if (FT_Load_Char(ft_face, *p, FT_LOAD_RENDER))
-				continue;
+			auto g = lookupGlyph(*p);
 
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RGBA,
-				g->bitmap.width,
-				g->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				g->bitmap.buffer
-			);
+			glBindTexture(GL_TEXTURE_2D, g.texture);
 
-			float x2 = x + g->bitmap_left;
-			float y2 = -y - g->bitmap_top;
-			float w = (float)g->bitmap.width;
-			float h = (float)g->bitmap.rows;
+			float x2 = x + g.x;
+			float y2 = -y - g.y;
+			float w = g.width;
+			float h = g.height;
 
 			glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
@@ -210,8 +231,8 @@ namespace Twist {
 			glVertex2f(x2, -y2 - h);
 			glEnd();
 
-			x += g->advance.x * 0.015625f;
-			y += g->advance.y * 0.015625f;
+			x += g.advanceX;
+			y += g.advanceY;
 		}
 
 		glBindTexture(GL_TEXTURE_2D, 0);

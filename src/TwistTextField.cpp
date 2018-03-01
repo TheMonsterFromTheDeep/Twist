@@ -199,8 +199,7 @@ text.erase(text.begin() + cursorPosition);
 			}
 		}
 
-		Vector textBounds = Body.bounds(text.c_str());
-		if (x > textX + textBounds.x) return text.length();
+		return text.length();
 	}
 
 	void TextField::onMouseDown(MouseEvent& me) {
