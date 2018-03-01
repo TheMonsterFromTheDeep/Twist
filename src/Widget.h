@@ -84,6 +84,8 @@ namespace Twist {
 		std::vector<std::unique_ptr<Widget>> children;
 
 		bool captureExternalMouseEvents = false;
+
+		void unfocus();
 	public:
 		Vector getLocation() const;
 

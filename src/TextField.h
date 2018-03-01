@@ -5,7 +5,7 @@
 
 namespace Twist {
 	class TextField : public Widget {
-		std::wstring text;
+		
 
 		int cursorPosition = 0;
 		int selectionPosition = 0;
@@ -22,19 +22,31 @@ namespace Twist {
 
 		void putString(const std::wstring&);
 		void setCursorPosition(int);
+	protected:
+		std::wstring text;
 	public:
 		void onText(TextEvent&);
 		void paint();
 		Vector getPreferredBounds();
 
-		void onFocus();
+		virtual void onFocus();
+		virtual void onUnfocus();
+
+		virtual void onKeyDown(KeyEvent&);
+
+		virtual void onMouseDown(MouseEvent&);
+		virtual void onMouseMove(MouseEvent&);
+		virtual void onMouseUp(MouseEvent&);
+
+		virtual void onTextChanged();
+
+		std::wstring getText();
+	};
+
+	class NumberField : public TextField {
+		float value;
+	public:
 		void onUnfocus();
-
-		void onKeyDown(KeyEvent&);
-
-		void onMouseDown(MouseEvent&);
-		void onMouseMove(MouseEvent&);
-		void onMouseUp(MouseEvent&);
 	};
 }
 

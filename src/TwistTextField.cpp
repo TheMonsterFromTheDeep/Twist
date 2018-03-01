@@ -80,11 +80,13 @@ namespace Twist {
 	void TextField::putString(const std::wstring& put) {
 		if (hasSelection) {
 			text.replace(text.begin() + lowSelectedIndex(), text.begin() + highSelectedIndex(), put);
+			onTextChanged();
 			setCursorPosition(lowSelectedIndex() + put.length());
 			hasSelection = false;
 		}
 		else {
 			text.insert(cursorPosition, put);
+			onTextChanged();
 			cursorPosition += put.length();
 		}
 	}
@@ -95,18 +97,23 @@ namespace Twist {
 		}
 	}
 
+	/* Event that child classes can override */
+	void TextField::onTextChanged() { }
+
 	void TextField::onKeyDown(KeyEvent& ke) {
 		if (ke.keycode == SDLK_BACKSPACE) {
 			if (text.length() > 0) {
 				if (cursorPosition > 0 && cursorPosition <= text.length()) {
 					if (hasSelection) {
 						text.erase(text.begin() + lowSelectedIndex(), text.begin() + highSelectedIndex());
+						onTextChanged();
 						setCursorPosition(lowSelectedIndex());
 						hasSelection = false;
 					}
 					else {
-setCursorPosition(cursorPosition - 1);
-text.erase(text.begin() + cursorPosition);
+						setCursorPosition(cursorPosition - 1);
+						text.erase(text.begin() + cursorPosition);
+						onTextChanged();
 					}
 				}
 			}
@@ -162,6 +169,9 @@ text.erase(text.begin() + cursorPosition);
 			}
 		}
 
+		if (ke.keycode == SDLK_RETURN) {
+			unfocus();
+		}
 
 		if (selectionPosition < 0) selectionPosition = 0;
 		if (selectionPosition > text.length()) selectionPosition = text.length();
@@ -227,6 +237,22 @@ text.erase(text.begin() + cursorPosition);
 		else {
 			selectionPosition = otherPosition;
 			hasSelection = true;
+		}
+	}
+
+	std::wstring TextField::getText() {
+		return text;
+	}
+
+	void NumberField::onUnfocus() {
+		TextField::onUnfocus();
+
+		try {
+			value = std::stof(text);
+		}
+		catch (std::exception& e) {
+			value = 0;
+			text = L"0";
 		}
 	}
 }

@@ -104,14 +104,21 @@ namespace Twist {
 		SDL_StopTextInput();
 	}
 
-	void Widget::performMouseDown(MouseEvent& me) {
-		bool wasFocused = focused;
+	void Widget::unfocus() {
 		focused = false;
+		onUnfocus();
+	}
+
+	void Widget::performMouseDown(MouseEvent& me) {
 		if (containsMouse || captureExternalMouseEvents || focusOwner) {
 			if (!focusOwner || focusOwner == this) {
 				onMouseDown(me);
 			}
 		}
+
+		bool wasFocused = focused;
+		focused = false;
+
 		if (containsMouse) {
 			focused = true;
 			onFocus();
