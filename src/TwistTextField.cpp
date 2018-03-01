@@ -23,7 +23,7 @@ namespace Twist {
 		Vector fontBounds = Body.bounds(text.c_str());
 
 		float textX = Theme::FontSize * 0.5f;
-		float textY = (bounds.y - Theme::FontSize) * 0.5f;
+		float textY = (bounds.y - Body.bounds("Mg").y) * 0.5f;
 
 		float scissorBound = bounds.x - 2 * textX;
 
@@ -49,7 +49,7 @@ namespace Twist {
 		if (isFocused()) {
 			
 			GL::color(Theme::TextFieldCursor);
-			GL::rectangle(textX + indexBounds.x, textY, Theme::TextFieldCursorWidth, Theme::FontSize);
+			GL::rectangle(textX + indexBounds.x, textY - 0.1 * Theme::FontSize, Theme::TextFieldCursorWidth, Theme::FontSize);
 
 			if (hasSelection) {
 				Vector selectionBounds = Body.bounds(text.substr(0, selectionPosition).c_str());
