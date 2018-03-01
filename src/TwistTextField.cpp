@@ -35,7 +35,7 @@ namespace Twist {
 			pan = 0 - indexBounds.x + Theme::TextFieldCursorWidth;
 		}
 		
-		GL::color(Theme::TextFieldBackground);
+		GL::color(isValid ? Theme::TextFieldBackground : Theme::TextFieldBackgroundInvalid);
 		GL::rectangle(0, 0, bounds.x, bounds.y);
 
 		GL::translate(pan, 0);
@@ -99,6 +99,12 @@ namespace Twist {
 
 	/* Event that child classes can override */
 	void TextField::onTextChanged() { }
+
+	void TextField::selectAll() {
+		hasSelection = true;
+		selectionPosition = 0;
+		cursorPosition = text.length();
+	}
 
 	void TextField::onKeyDown(KeyEvent& ke) {
 		if (ke.keycode == SDLK_BACKSPACE) {
@@ -167,6 +173,9 @@ namespace Twist {
 					SDL_SetClipboardText(converter.to_bytes(source).c_str());
 				}
 			}
+			if (ke.keycode == SDLK_a) {
+				selectAll();
+			}
 		}
 
 		if (ke.keycode == SDLK_RETURN) {
@@ -181,6 +190,7 @@ namespace Twist {
 
 	void TextField::onFocus() {
 		TextEvent::beginInput();
+		selectAll();
 	}
 
 	void TextField::onUnfocus() {
@@ -244,15 +254,21 @@ namespace Twist {
 		return text;
 	}
 
-	void NumberField::onUnfocus() {
-		TextField::onUnfocus();
+	void NumberField::onTextChanged() {
+		TextField::onTextChanged();
+
+		value = 0;
+		if (text.length() == 0) {
+			isValid = true;
+			return;
+		}
 
 		try {
 			value = std::stof(text);
+			isValid = true;
 		}
 		catch (std::exception& e) {
-			value = 0;
-			text = L"0";
+			isValid = false;
 		}
 	}
 }

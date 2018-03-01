@@ -15,6 +15,7 @@ namespace Theme {
 	Twist::Color ButtonFontColor(Twist::Color::gray(0.1f));
 
 	Twist::Color TextFieldBackground(Twist::Color::gray(0.85f));
+	Twist::Color TextFieldBackgroundInvalid(Twist::Color::rgbFromHex(0xff8989));
 	Twist::Color TextFieldFont(Twist::Color::gray(0.05f));
 	Twist::Color TextFieldCursor(Twist::Color::gray(0.2f));
 	Twist::Color TextFieldSelection(Twist::Color::argbFromHex(0xaf2fa5dc));

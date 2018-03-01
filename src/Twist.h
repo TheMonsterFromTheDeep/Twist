@@ -361,6 +361,7 @@ namespace Theme {
 	extern Twist::Color ButtonFontColor;
 
 	extern Twist::Color TextFieldBackground;
+	extern Twist::Color TextFieldBackgroundInvalid;
 	extern Twist::Color TextFieldFont;
 	extern Twist::Color TextFieldCursor;
 	extern Twist::Color TextFieldSelection;

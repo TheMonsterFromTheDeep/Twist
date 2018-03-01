@@ -5,8 +5,6 @@
 
 namespace Twist {
 	class TextField : public Widget {
-		
-
 		int cursorPosition = 0;
 		int selectionPosition = 0;
 		bool hasSelection = false;
@@ -16,6 +14,8 @@ namespace Twist {
 		int highSelectedIndex();
 		int selectionLength();
 
+		void selectAll();
+
 		int visualIndex(float x);
 		
 		bool readingMouse = false;
@@ -24,6 +24,7 @@ namespace Twist {
 		void setCursorPosition(int);
 	protected:
 		std::wstring text;
+		bool isValid = true;
 	public:
 		void onText(TextEvent&);
 		void paint();
@@ -46,7 +47,7 @@ namespace Twist {
 	class NumberField : public TextField {
 		float value;
 	public:
-		void onUnfocus();
+		void onTextChanged();
 	};
 }
 
