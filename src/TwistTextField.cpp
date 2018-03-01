@@ -225,7 +225,8 @@ namespace Twist {
 	}
 
 	void TextField::onMouseDown(MouseEvent& me) {
-		setCursorPosition(visualIndex(me.x));
+		int position = visualIndex(me.x);
+		setCursorPosition(position);
 
 		selectionPosition = cursorPosition;
 		hasSelection = false;

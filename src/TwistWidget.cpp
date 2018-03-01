@@ -117,10 +117,9 @@ namespace Twist {
 		}
 
 		bool wasFocused = focused;
-		focused = false;
+		focused = containsMouse;
 
-		if (containsMouse) {
-			focused = true;
+		if (focused && !wasFocused) {
 			onFocus();
 		}
 		if (!focused && wasFocused) {
