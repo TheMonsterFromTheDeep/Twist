@@ -48,13 +48,15 @@ namespace Twist {
 
 		if (isFocused()) {
 			
+			float cursorY = textY - 0.1 * Theme::FontSize;
+
 			GL::color(Theme::TextFieldCursor);
-			GL::rectangle(textX + indexBounds.x, textY - 0.1 * Theme::FontSize, Theme::TextFieldCursorWidth, Theme::FontSize);
+			GL::rectangle(textX + indexBounds.x, cursorY, Theme::TextFieldCursorWidth, Theme::FontSize);
 
 			if (hasSelection) {
 				Vector selectionBounds = Body.bounds(text.substr(0, selectionPosition).c_str());
 				GL::color(Theme::TextFieldSelection);
-				GL::rectangle(textX + indexBounds.x, textY, selectionBounds.x - indexBounds.x, Theme::FontSize);
+				GL::rectangle(textX + indexBounds.x, cursorY, selectionBounds.x - indexBounds.x, Theme::FontSize);
 			}
 		}
 	}
